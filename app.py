@@ -2,10 +2,22 @@ import streamlit as st
 import pandas as pd
 import random
 import io
+import os
 
 # --- Chargement des données ---
 biais_df = pd.read_csv("biais.csv", dtype={"index_biais": str})
-titres_df = pd.read_csv("titres.csv", sep=";")
+
+# --- Chargement dynamique du fichier titres ---
+titres_file = next((f for f in os.listdir() if f.lower().startswith("titres") and f.lower().endswith((".csv", ".xlsx"))), None)
+
+if titres_file:
+    if titres_file.endswith(".csv"):
+        titres_df = pd.read_csv(titres_file, sep=";")
+    else:
+        titres_df = pd.read_excel(titres_file)
+else:
+    st.error("Aucun fichier de titres trouvé. Assurez-vous qu’un fichier dont le nom commence par 'Titres' est présent.")
+    st.stop()
 
 # --- Initialisation session state ---
 if "annotations" not in st.session_state:
@@ -36,7 +48,8 @@ if annotateur:
         with col1:
             st.subheader(f"Biais à évaluer : {biais_info['nom']} ({biais_info['index_biais']})")
             for col in ['mecanisme', 'declencheurs', 'exemple', 'faux_positif', 'validation']:
-                st.markdown(f"**{col.capitalize().replace('_', ' ')} :**  \n{biais_info[col]}")
+                st.markdown(f"**{col.capitalize().replace('_', ' ')} :**  
+{biais_info[col]}")
                 st.markdown("")  # ligne vide
 
         with col2:
