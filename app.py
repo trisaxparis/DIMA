@@ -7,7 +7,7 @@ st.set_page_config(page_title="Annotation biais", layout="centered")
 
 # Chargement des fichiers nécessaires
 titre_path = "titres_manipulatifs10.csv"
-biais_path = "biais_complet_final_questions.csv"
+biais_path = "biais_complet_avec_questions.csv"
 
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
     st.error("Fichiers manquants. Vérifie la présence de 'titres_manipulatifs10.csv' et 'biais_complet_final_questions.csv'.")
@@ -92,4 +92,4 @@ with col3:
         df_save = pd.DataFrame(annotations)
         save_path = f"annotations_{nom_biais.replace(' ', '_')}.csv"
         df_save.to_csv(save_path, index=False)
-        st.success(f"Annotations sauvegardées dans `{save_path}_
+        st.success(f"Annotations sauvegardées dans `{save_path}`")
