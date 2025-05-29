@@ -30,7 +30,7 @@ st.markdown("""
 
 # ─── 3) CHARGEMENT DES FICHIERS ─────────────────────────────────────────────────
 titre_path = "titres_manipulatifs10.csv"
-biais_path = "biais_complet_final_questions.csv"
+biais_path = "biais_complet_avec_questions.csv"
 
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
     st.error("Fichiers manquants. Vérifie que les CSV sont bien présents.")
