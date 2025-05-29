@@ -1,0 +1,130 @@
+nom,definition_operationnelle,question_annotation
+Effet de contexte,"### Effet de contexte
+
+Tendance à voir son jugement influencé par l'environnement immédiat plutôt que par les qualités objectives de l'information.","Le titre modifie-t-il la perception d’un fait neutre en le replaçant dans un contexte susceptible de changer le jugement du lecteur ? (ex. : situation de guerre, crise sanitaire, menace terroriste, contexte électoral, urgence climatique...)"
+Biais de distinction,"### Biais de distinction
+
+Exagération des différences entre options similaires lorsqu'elles sont évaluées ensemble.","Le titre accentue-t-il une différence entre deux éléments qui semblent pourtant proches ou similaires ? (ex. : opposer deux groupes, alternatives, nations ou propositions qui partagent pourtant des caractéristiques communes)"
+Loi de Weber-Fechner,"### Loi de Weber-Fechner
+
+Perception de la variation relative d'un stimulus dépendant de son intensité de départ.",Le titre joue-t-il sur une échelle de variation qui masque ou amplifie un changement en fonction de son point de départ ? (ex. : variation faible perçue comme majeure selon l’intensité initiale)
+Effet Peltzman (compensation du risque),"### Effet Peltzman (compensation du risque)
+
+Tendance à compenser des mesures de sécurité par des comportements plus risqués.","Le titre suggère-t-il qu’une mesure de sécurité ou de prévention entraînerait un comportement plus risqué ou relâché ? (ex. : port du casque = prise de risques accrue, impunité liée à une protection renforcée)"
+Effet de retournement,"### Effet de retournement
+
+Réaction opposée à l'effet escompté sous influence perçue.","Le titre semble-t-il provoquer une réaction opposée à celle attendue ? (ex. : injonction perçue comme manipulatoire, appel moralisateur déclenchant du rejet, surenchère provocant la distance)"
+Saturation informationnelle,"### Saturation informationnelle
+
+Effondrement de la capacité de traitement sous surcharge d'information.",Le titre mobilise-t-il un biais de type « Saturation informationnelle » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet d'espacement,"### Effet d'espacement
+
+Meilleure mémorisation par apprentissage réparti dans le temps.",Le titre mobilise-t-il un biais de type « Effet d'espacement » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de suggestion,"### Effet de suggestion
+
+Altération des souvenirs sous l'effet de suggestions extérieures.",Le titre mobilise-t-il un biais de type « Effet de suggestion » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de génération,"### Effet de génération
+
+Meilleure rétention d'une information quand elle est produite soi-même.",Le titre mobilise-t-il un biais de type « Effet de génération » identifiable par une structure de pensée ou une logique implicite particulière ?
+Stéréotype implicite,"### Stéréotype implicite
+
+Activation automatique d'associations stéréotypées envers un groupe.",Le titre mobilise-t-il un biais de type « Stéréotype implicite » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effacement négatif,"### Effacement négatif
+
+Tendance à oublier préférentiellement les souvenirs négatifs.",Le titre mobilise-t-il un biais de type « Effacement négatif » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais d'omission,"### Biais d'omission
+
+Tendance à juger moins sévèrement une action par omission qu'une action par commission.",Le titre mobilise-t-il un biais de type « Biais d'omission » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais de la route connue,"### Biais de la route connue
+
+Préférence pour les chemins déjà empruntés malgré des alternatives meilleures.",Le titre mobilise-t-il un biais de type « Biais de la route connue » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais de la somme nulle,"### Biais de la somme nulle
+
+Croyance que les gains des uns impliquent nécessairement les pertes des autres.",Le titre mobilise-t-il un biais de type « Biais de la somme nulle » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais de normalité,"### Biais de normalité
+
+Sous-estimation des événements extrêmes par projection de la continuité passée.",Le titre mobilise-t-il un biais de type « Biais de normalité » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais de confusion de source,"### Biais de confusion de source
+
+Mauvaise attribution de la provenance d'un souvenir ou d'une information.",Le titre mobilise-t-il un biais de type « Biais de confusion de source » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais de la preuve anecdotique,"### Biais de la preuve anecdotique
+
+Priorisation des témoignages personnels sur les données statistiques.",Le titre mobilise-t-il un biais de type « Biais de la preuve anecdotique » identifiable par une structure de pensée ou une logique implicite particulière ?
+Illusion des séries,"### Illusion des séries
+
+Perception de motifs dans des séquences d'événements aléatoires.",Le titre mobilise-t-il un biais de type « Illusion des séries » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de biais d'homogénéité de l'exogroupe,"### Effet de biais d'homogénéité de l'exogroupe
+
+Perception exagérée de la similarité au sein d'un groupe extérieur.",Le titre mobilise-t-il un biais de type « Effet de biais d'homogénéité de l'exogroupe » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de retournement émotionnel,"### Effet de retournement émotionnel
+
+Amplification émotionnelle par rupture d'attente affective.","Le titre semble-t-il provoquer une réaction opposée à celle attendue ? (ex. : injonction perçue comme manipulatoire, appel moralisateur déclenchant du rejet, surenchère provocant la distance)"
+Effet de fausse mémoire,"### Effet de fausse mémoire
+
+Création ou modification de souvenirs suite à des influences externes ou reconstructions mentales.",Le titre mobilise-t-il un biais de type « Effet de fausse mémoire » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de confiance excessive,"### Effet de confiance excessive
+
+Surestimation de ses capacités ou connaissances réelles.",Le titre mobilise-t-il un biais de type « Effet de confiance excessive » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet d'illusion de contrôle,"### Effet d'illusion de contrôle
+
+Croyance exagérée de pouvoir influencer des événements incontrôlables.",Le titre mobilise-t-il un biais de type « Effet d'illusion de contrôle » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet d'amorçage émotionnel,"### Effet d'amorçage émotionnel
+
+Modification du jugement suite à une stimulation émotionnelle préalable.",Le titre mobilise-t-il un biais de type « Effet d'amorçage émotionnel » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de simplification heuristique,"### Effet de simplification heuristique
+
+Usage de raccourcis mentaux rapides pour évaluer des situations complexes.",Le titre mobilise-t-il un biais de type « Effet de simplification heuristique » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet d'atténuation de l'alerte,"### Effet d'atténuation de l'alerte
+
+Diminution de la vigilance face à un danger par absence d’incident visible.",Le titre mobilise-t-il un biais de type « Effet d'atténuation de l'alerte » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais d'optimisme irréaliste,"### Biais d'optimisme irréaliste
+
+Tendance à croire que les événements négatifs arrivent plus aux autres qu'à soi.",Le titre mobilise-t-il un biais de type « Biais d'optimisme irréaliste » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais de normalisation du déviant,"### Biais de normalisation du déviant
+
+Acceptation progressive de comportements déviants devenus fréquents.",Le titre mobilise-t-il un biais de type « Biais de normalisation du déviant » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais d'ancrage,"### Biais d'ancrage
+
+Surestimation d'une première information donnée pour évaluer une situation ultérieure.","Le titre donne-t-il une valeur de référence (chiffre, seuil, formulation) qui influence la perception du reste de l'information ? (ex. : montant fixé, seuil implicite, norme implicite)"
+Biais de disponibilité,"### Biais de disponibilité
+
+Juger la probabilité d'un événement selon la facilité avec laquelle des exemples nous viennent à l'esprit.",Le titre met-il en avant un exemple marquant ou récent pour appuyer une idée générale ? (ex. : fait divers récent pris comme preuve d'une tendance)
+Effet de halo,"### Effet de halo
+
+Une impression générale influence l'évaluation des caractéristiques spécifiques.",Le titre mobilise-t-il un biais de type « Effet de halo » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de simple exposition,"### Effet de simple exposition
+
+Préférence pour un stimulus par exposition répétée sans interaction consciente.",Le titre mobilise-t-il un biais de type « Effet de simple exposition » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de récence,"### Effet de récence
+
+Meilleure mémorisation ou influence accrue des dernières informations reçues.",Le titre mobilise-t-il un biais de type « Effet de récence » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de primauté,"### Effet de primauté
+
+Meilleure mémorisation ou influence des premières informations reçues.",Le titre mobilise-t-il un biais de type « Effet de primauté » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais de confirmation,"### Biais de confirmation
+
+Recherche ou interprétation d’informations qui confirment ses croyances préexistantes.","Le titre conforte-t-il un préjugé ou une opinion attendue, sans vraiment le remettre en question ? (ex. : cliché politique, figure rassurante, récit univoque)"
+Biais de négativité,"### Biais de négativité
+
+Poids cognitif plus important donné aux expériences négatives qu’aux positives.",Le titre mobilise-t-il un biais de type « Biais de négativité » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de contraste,"### Effet de contraste
+
+Accentuation des différences perçues entre deux stimuli présentés successivement.",Le titre mobilise-t-il un biais de type « Effet de contraste » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet Von Restorff,"### Effet Von Restorff
+
+Mémorisation accrue d'un élément distinctif au sein d'un ensemble homogène.",Le titre mobilise-t-il un biais de type « Effet Von Restorff » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet Barnum (ou effet Forer),"### Effet Barnum (ou effet Forer)
+
+Wikipédia.",Le titre mobilise-t-il un biais de type « Effet Barnum (ou effet Forer) » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet Dunning-Kruger,"### Effet Dunning-Kruger
+
+Wikipédia.",Le titre mobilise-t-il un biais de type « Effet Dunning-Kruger » identifiable par une structure de pensée ou une logique implicite particulière ?
+Biais de statu quo,"### Biais de statu quo
+
+Préférence pour la situation actuelle, par peur ou par inertie, malgré de meilleures alternatives.",Le titre mobilise-t-il un biais de type « Biais de statu quo » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de faux consensus,"### Effet de faux consensus
+
+Surestimation du degré d'accord d'autrui avec nos propres opinions ou comportements.",Le titre mobilise-t-il un biais de type « Effet de faux consensus » identifiable par une structure de pensée ou une logique implicite particulière ?
+Effet de biais d'autocomplaisance,"### Effet de biais d'autocomplaisance
+
+Wikipédia.",Le titre mobilise-t-il un biais de type « Effet de biais d'autocomplaisance » identifiable par une structure de pensée ou une logique implicite particulière ?
