@@ -9,7 +9,7 @@ titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
 save_path = "annotations_global.csv"
 
-# État de relance
+# Gestion du rerun
 if "trigger_rerun" not in st.session_state:
     st.session_state.trigger_rerun = False
 elif st.session_state.trigger_rerun:
@@ -17,7 +17,6 @@ elif st.session_state.trigger_rerun:
     st.rerun()
 
 def main():
-    # Chargement des fichiers
     if not os.path.exists(titre_path) or not os.path.exists(biais_path):
         st.error("Fichiers manquants.")
         st.stop()
@@ -25,7 +24,7 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
-    # ✅ Réinitialisation propre sans bug
+    # ✅ Réinitialisation fonctionnelle
     if st.sidebar.button("🧹 Réinitialiser tout"):
         if os.path.exists(save_path):
             os.remove(save_path)
@@ -34,7 +33,6 @@ def main():
         st.sidebar.success("Réinitialisation effectuée. Rechargement…")
         st.rerun()
 
-    # Gestion des sessions
     if "biais_index" not in st.session_state:
         st.session_state.biais_index = 0
     if "titres_random" not in st.session_state or st.session_state.get("reset_titres", False):
@@ -54,12 +52,10 @@ def main():
     else:
         st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
 
-    # Infos du biais courant
     biais_index = st.session_state.biais_index
     current_biais = df_biais.iloc[biais_index]
     nom_biais = current_biais["nom"]
 
-    # Avancement
     if os.path.exists(save_path):
         df_saved = pd.read_csv(save_path)
         biais_annotes = df_saved["biais"].nunique()
@@ -71,21 +67,17 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # 🧠 Présentation du biais (gauche) + titres à annoter (droite)
-    col1, col2 = st.columns([1.5, 3.5])
-
+    # Colonnes gauche (biais) / droite (titres)
+    col1, col2 = st.columns([1, 4])
     with col1:
-        st.markdown(f"### 🧠 Biais analysé : *{nom_biais}*")
-        st.markdown("#### ❓ Question d’annotation")
-        question_text = current_biais.get("question_annotation", "").strip()
-        st.markdown(f"<div style='font-size: 1.1rem; line-height: 1.6;'>{question_text}</div>", unsafe_allow_html=True)
-        if current_biais.get("definition_operationnelle"):
-            with st.expander("📚 Définition du biais"):
-                st.markdown(current_biais["definition_operationnelle"])
+        st.markdown(f"#### 🧠 Biais analysé : *{nom_biais}*")
+        st.markdown("## ❓ Question")
+        st.markdown(f"**{current_biais['question_annotation']}**")
+        with st.expander("ℹ️ Définition du biais"):
+            st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
-    # 🎯 Boucle sur les titres à annoter
+    annotations = []
     with col2:
-        annotations = []
         for i, row in st.session_state.titres_random.iterrows():
             titre = row["Titre"]
             key = f"{nom_biais}_{i}"
@@ -119,7 +111,6 @@ def main():
                 "annotateur": st.session_state.initiales
             })
 
-    # ✅ Passage au biais suivant
     def tous_titres_annotes():
         return all(a["annotation"] in ["1", "2", "3", "4"] for a in annotations)
 
@@ -149,7 +140,6 @@ def main():
             else:
                 st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
 
-    # 📥 Export des annotations
     if os.path.exists(save_path):
         st.sidebar.markdown("---")
         with open(save_path, "rb") as f:
