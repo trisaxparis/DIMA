@@ -98,7 +98,9 @@ with col3:
 if go_prev:
     st.session_state.biais_index -= 1
     st.experimental_rerun()
+    st.stop()
 
 if go_next:
     st.session_state.biais_index += 1
     st.experimental_rerun()
+    st.stop()
