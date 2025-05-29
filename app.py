@@ -7,7 +7,7 @@ st.set_page_config(page_title="Annotation biais", layout="wide")
 
 # ─── 2) CHARGEMENT DES FICHIERS CSV ─────────────────────────────────
 titre_path = "titres_manipulatifs10.csv"
-biais_path = "biais_complet_final_questions.csv"
+biais_path = "biais_complet_avec_questions.csv"
 
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
     st.error("Fichiers manquants. Vérifie la présence des fichiers nécessaires.")
