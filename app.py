@@ -9,7 +9,6 @@ titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
 save_path = "annotations_global.csv"
 
-# Gestion du rerun
 if "trigger_rerun" not in st.session_state:
     st.session_state.trigger_rerun = False
 elif st.session_state.trigger_rerun:
@@ -24,7 +23,6 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
-    # Réinitialisation propre
     if st.sidebar.button("🧹 Réinitialiser tout"):
         if os.path.exists(save_path):
             os.remove(save_path)
@@ -67,24 +65,22 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # Colonnes : contexte (gauche) / titres (droite)
+    # -- CONTEXTE : colonne gauche
     col1, col2 = st.columns([1.5, 3.5])
 
     with col1:
         st.markdown(f"### 🧠 Biais analysé : *{nom_biais}*")
-
         st.markdown("#### ❓ Question d’annotation")
         question_text = current_biais.get("question_annotation", "").strip()
-        st.markdown(f"<div style='margin-top: 0.5rem; font-size: 1.1rem;'>{question_text}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='font-size: 1.1rem; line-height: 1.6;'>{question_text}</div>", unsafe_allow_html=True)
 
-        definition = current_biais.get("definition_operationnelle", "").strip()
-        if definition:
-            st.markdown("#### 📚 Définition")
-            with st.expander("Afficher la définition du biais"):
-                st.markdown(definition)
+        if current_biais.get("definition_operationnelle"):
+            with st.expander("📚 Définition du biais"):
+                st.markdown(current_biais["definition_operationnelle"])
 
-    annotations = []
+    # -- ANNOTATIONS : colonne droite
     with col2:
+        annotations = []
         for i, row in st.session_state.titres_random.iterrows():
             titre = row["Titre"]
             key = f"{nom_biais}_{i}"
