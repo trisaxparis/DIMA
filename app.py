@@ -62,4 +62,100 @@ def main():
     current_biais = df_biais.iloc[biais_index]
     nom_biais = current_biais["nom"]
 
- ​:contentReference[oaicite:0]{index=0}​
+    # PROGRESSION
+    if os.path.exists(save_path):
+        df_saved = pd.read_csv(save_path)
+        biais_annotes = df_saved["biais"].nunique()
+    else:
+        biais_annotes = 0
+
+    total_biais = len(df_biais)
+    progression = biais_annotes / total_biais
+
+    st.markdown(f"### 🔢 Avancement : {biais_annotes} / {total_biais} biais annotés")
+    st.progress(progression)
+    st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
+
+    # QUESTION & DÉFINITION
+    with st.sidebar:
+        st.markdown("## ❓ Question")
+        st.markdown(f"**{current_biais['question_annotation']}**")
+        with st.expander("ℹ️ Définition du biais"):
+            st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
+
+    # TITRES À ANNOTER
+    annotations = []
+    for i, row in st.session_state.titres_random.iterrows():
+        titre = row["Titre"]
+        key = f"{nom_biais}_{i}"
+        st.markdown(f"**{i+1}.** {titre}")
+
+        choix = st.radio(
+            label="",
+            options=["", "1", "2", "3", "4"],
+            key=key,
+            horizontal=True
+        )
+
+        st.markdown(
+            """
+            <div style='display: flex; justify-content: space-between; font-size: 0.9em; padding: 0 1em;'>
+                <span>1 – Pas du tout présent</span>
+                <span>2 – Faiblement présent</span>
+                <span>3 – Moyennement présent</span>
+                <span>4 – Très présent</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        annotations.append({
+            "titre": titre,
+            "biais": nom_biais,
+            "annotation": choix,
+            "annotateur": st.session_state.initiales
+        })
+
+    # VALIDATION
+    def tous_titres_annotes():
+        return all(a["annotation"] in ["1", "2", "3", "4"] for a in annotations)
+
+    # NAVIGATION
+    st.divider()
+    col1, col2, col3 = st.columns([1, 4, 1])
+
+    with col2:
+        if st.button("➡️ Biais suivant"):
+            if tous_titres_annotes():
+                df_save = pd.DataFrame(annotations)
+
+                if os.path.exists(save_path):
+                    df_existing = pd.read_csv(save_path)
+                    df_concat = pd.concat([df_existing, df_save], ignore_index=True)
+                else:
+                    df_concat = df_save
+
+                df_concat.to_csv(save_path, index=False)
+
+                for i in range(len(st.session_state.titres_random)):
+                    key = f"{nom_biais}_{i}"
+                    if key in st.session_state:
+                        del st.session_state[key]
+
+                if biais_index < len(df_biais) - 1:
+                    st.session_state.biais_index += 1
+                    st.session_state.reset_titres = True
+                    st.session_state.trigger_rerun = True
+                    st.rerun()
+                else:
+                    st.success("🎉 Tous les biais ont été annotés.")
+            else:
+                st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
+
+    if os.path.exists(save_path):
+        st.sidebar.markdown("---")
+        with open(save_path, "rb") as f:
+            st.sidebar.download_button("📥 Télécharger annotations", f, file_name="annotations.csv")
+
+# LANCEMENT
+main()
