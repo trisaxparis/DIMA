@@ -1,3 +1,10 @@
+if st.sidebar.button("🧹 Réinitialiser tout"):
+    if os.path.exists(save_path):
+        os.remove(save_path)
+    for k in list(st.session_state.keys()):
+        del st.session_state[k]
+    st.session_state.trigger_rerun = True
+    return
 from pathlib import Path
 import pandas as pd
 import streamlit as st
