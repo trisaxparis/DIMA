@@ -2,48 +2,42 @@ import streamlit as st
 import pandas as pd
 import os
 
-# 1. CONFIG
+# CONFIG
 st.set_page_config(page_title="Annotation biais", layout="wide")
 
-# 2. REDIRECTION SÛRE PAR FLAG
-
-
-# 3. CHARGEMENT DES FICHIERS
+# Chargement des fichiers
 titre_path = "titres_manipulatifs10.csv"
-biais_path = "biais_complet_avec_questions.csv"
+biais_path = "biais_modifie_interface.csv"
 
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
-    st.error("Fichiers manquants.")
+    st.error("Fichiers manquants. Assure-toi que les deux fichiers sont présents.")
     st.stop()
 
 df_titres = pd.read_csv(titre_path, sep=";")
 df_biais = pd.read_csv(biais_path)
 
-# 4. SESSION STATE INIT
-if "biais_index" not in st.session_state:
-    st.session_state.biais_index = 0
+# Sélection du biais
+liste_biais = df_biais["nom"].tolist()
+biais_selectionne = st.selectbox("Choisissez un biais à annoter :", liste_biais)
+current_biais = df_biais[df_biais["nom"] == biais_selectionne].iloc[0]
 
-biais_index = st.session_state.biais_index
-current_biais = df_biais.iloc[biais_index]
-nom_biais = current_biais["nom"]
-
-# 5. SIDEBAR : question + définition
+# Sidebar : question + définition
 with st.sidebar:
-    st.markdown("## ❓ Question d’annotation")
-    st.markdown(f"{current_biais['question_annotation']}")
-    with st.expander(f"ℹ️ Définition du biais : {nom_biais}"):
+    st.markdown("## ❓ Question")
+    st.markdown(f"**{current_biais['question_annotation']}**")
+    with st.expander("ℹ️ Définition du biais"):
         st.markdown(current_biais["definition_operationnelle"])
 
-# 6. AFFICHAGE DES TITRES
+# Affichage des titres
 st.markdown("## Titres à annoter")
-annotations = []
 
+annotations = []
 for i, row in df_titres.head(10).iterrows():
     titre = row["Titre"]
-    key = f"{nom_biais}_{i}"
+    key = f"{biais_selectionne}_{i}"
     st.markdown(f"**{i+1}.** {titre}")
     choix = st.radio(
-        "Sélectionner une option :",
+        "Réponse :",
         ["", "Oui", "Doute", "Non"],
         index=0,
         key=key,
@@ -51,58 +45,27 @@ for i, row in df_titres.head(10).iterrows():
     )
     annotations.append({
         "titre": titre,
-        "biais": nom_biais,
+        "biais": biais_selectionne,
         "annotation": choix
     })
 
-# 7. VALIDATION
-def tous_titres_annotés():
+# Vérification
+def tous_titres_annotes():
     return all(a["annotation"] in ["Oui", "Doute", "Non"] for a in annotations)
 
-# 8. BOUTONS ACTIONS
-st.divider()
-col1, col2, col3 = st.columns([1, 1, 2])
+# Sauvegarde
+if st.button("💾 Sauvegarder les annotations"):
+    if tous_titres_annotes():
+        df_save = pd.DataFrame(annotations)
+        save_path = "annotations_global.csv"
 
-def clear_radios():
-    for i in range(10):
-        key = f"{nom_biais}_{i}"
-        if key in st.session_state:
-            del st.session_state[key]
-
-with col1:
-    if st.button("⬅️ Biais précédent", disabled=biais_index == 0):
-        if tous_titres_annotés():
-            pd.DataFrame(annotations).to_csv(
-                f"annotations_{nom_biais.replace(' ', '_')}.csv", index=False
-            )
-            clear_radios()
-            st.session_state.biais_index -= 1
-            st.session_state["redirect"] = True
+        if os.path.exists(save_path):
+            df_existing = pd.read_csv(save_path)
+            df_concat = pd.concat([df_existing, df_save], ignore_index=True)
         else:
-            st.warning("⚠️ Merci d’annoter chaque titre avant de continuer.")
+            df_concat = df_save
 
-with col2:
-    if st.button("➡️ Biais suivant", disabled=biais_index == len(df_biais) - 1):
-        if tous_titres_annotés():
-            pd.DataFrame(annotations).to_csv(
-                f"annotations_{nom_biais.replace(' ', '_')}.csv", index=False
-            )
-            clear_radios()
-            st.session_state.biais_index += 1
-            st.session_state["redirect"] = True
-        else:
-            st.warning("⚠️ Merci d’annoter chaque titre avant de continuer.")
-
-with col3:
-    if st.button("💾 Sauvegarder"):
-        if tous_titres_annotés():
-            pd.DataFrame(annotations).to_csv(
-                f"annotations_{nom_biais.replace(' ', '_')}.csv", index=False
-            )
-            st.success("🔖 Annotations sauvegardées !")
-        else:
-            st.warning("⚠️ Merci d’annoter tous les titres avant de sauvegarder.")
-# 9. Rediriger proprement si navigation déclenchée
-if "redirect" in st.session_state and st.session_state["redirect"]:
-    st.session_state["redirect"] = False
-    st.experimental_rerun()
+        df_concat.to_csv(save_path, index=False)
+        st.success("✅ Annotations sauvegardées dans `annotations_global.csv`")
+    else:
+        st.warning("⚠️ Merci d’annoter tous les titres avant de sauvegarder.")
