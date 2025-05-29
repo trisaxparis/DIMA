@@ -18,13 +18,13 @@ if not os.path.exists(titre_path) or not os.path.exists(biais_path):
 df_titres_complet = pd.read_csv(titre_path, sep=";")
 df_biais = pd.read_csv(biais_path)
 
-# ÉTAT DE SESSION : INDEX ET TITRES RANDOMISÉS
+# ÉTAT DE SESSION
 if "biais_index" not in st.session_state:
     st.session_state.biais_index = 0
 
 if "titres_random" not in st.session_state or st.session_state.get("reset_titres", False):
-  nb_titres = min(10, len(df_titres_complet))
-st.session_state.titres_random = df_titres_complet.sample(n=nb_titres).reset_index(drop=True)
+    nb_titres = min(10, len(df_titres_complet))
+    st.session_state.titres_random = df_titres_complet.sample(n=nb_titres).reset_index(drop=True)
     st.session_state.reset_titres = False
 
 biais_index = st.session_state.biais_index
@@ -47,7 +47,7 @@ st.progress(progression)
 st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
 # ─────────────────────────────────────────────────────────────
-# SIDEBAR : question et définition
+# SIDEBAR
 with st.sidebar:
     st.markdown("## ❓ Question")
     st.markdown(f"**{current_biais['question_annotation']}**")
@@ -97,16 +97,13 @@ with col2:
 
             df_concat.to_csv(save_path, index=False)
 
-            # Nettoyer les réponses
-            for i in range(10):
+            for i in range(len(st.session_state.titres_random)):
                 key = f"{nom_biais}_{i}"
                 if key in st.session_state:
                     del st.session_state[key]
 
-            # Préparer titres aléatoires pour prochain biais
             st.session_state.reset_titres = True
 
-            # Aller au suivant
             if biais_index < len(df_biais) - 1:
                 st.session_state.biais_index += 1
                 st.experimental_rerun()
