@@ -106,7 +106,9 @@ with col2:
 
             if biais_index < len(df_biais) - 1:
                 st.session_state.biais_index += 1
+                st.stop()
                 st.experimental_rerun()
+
             else:
                 st.success("🎉 Tous les biais ont été annotés.")
         else:
