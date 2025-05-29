@@ -7,7 +7,7 @@ st.set_page_config(page_title="Annotation biais", layout="centered")
 
 # Chargement des fichiers nécessaires
 titre_path = "titres_manipulatifs10.csv"
-biais_path = "biais_complet_avec_questions.csv"
+biais_path = "biais_complet_final_questions.csv"
 
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
     st.error("Fichiers manquants. Vérifie la présence de 'titres_manipulatifs10.csv' et 'biais_complet_final_questions.csv'.")
@@ -26,16 +26,33 @@ if "annotations" not in st.session_state:
 current_biais = df_biais.iloc[st.session_state.biais_index]
 nom_biais = current_biais["nom"]
 
-# Affichage uniquement de la question, sans nom de biais ni titre
-st.markdown("#### ❓ Question d’annotation")
-st.success(current_biais["question_annotation"])
+# Affichage sticky de la question d’annotation
+question_html = f"""
+<style>
+.sticky-question {{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background-color: #f0f2f6;
+    padding: 1rem;
+    border-bottom: 1px solid #ccc;
+    z-index: 999;
+}}
+</style>
+<div class="sticky-question">
+    <strong>❓ Question d’annotation :</strong><br>
+    {current_biais["question_annotation"]}
+</div>
+"""
+st.markdown(question_html, unsafe_allow_html=True)
 
+# Définition du biais dans un expander
 with st.expander("ℹ️ Voir la définition du biais si nécessaire"):
     st.markdown(current_biais["definition_operationnelle"])
 
 st.divider()
 
-# Annotation de 10 titres (fixés ici pour l'exemple)
+# Annotation des 10 premiers titres
 annotations = []
 
 for i, row in df_titres.head(10).iterrows():
@@ -75,4 +92,4 @@ with col3:
         df_save = pd.DataFrame(annotations)
         save_path = f"annotations_{nom_biais.replace(' ', '_')}.csv"
         df_save.to_csv(save_path, index=False)
-        st.success(f"Annotations sauvegardées dans `{save_path}`")
+        st.success(f"Annotations sauvegardées dans `{save_path}_
