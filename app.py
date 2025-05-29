@@ -2,21 +2,21 @@ import streamlit as st
 import pandas as pd
 import os
 
-# Configuration de la page
-st.set_page_config(page_title="Annotation biais", layout="centered")
+# Configuration
+st.set_page_config(page_title="Annotation biais", layout="wide")
 
-# Chargement des fichiers nécessaires
+# Fichiers attendus
 titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
 
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
-    st.error("Fichiers manquants. Vérifie la présence de 'titres_manipulatifs10.csv' et 'biais_complet_final_questions.csv'.")
+    st.error("Fichiers manquants. Vérifie la présence des fichiers CSV nécessaires.")
     st.stop()
 
 df_titres = pd.read_csv(titre_path, sep=";")
 df_biais = pd.read_csv(biais_path)
 
-# Initialisation des variables de session
+# Session
 if "biais_index" not in st.session_state:
     st.session_state.biais_index = 0
 if "annotations" not in st.session_state:
@@ -26,43 +26,41 @@ if "annotations" not in st.session_state:
 current_biais = df_biais.iloc[st.session_state.biais_index]
 nom_biais = current_biais["nom"]
 
-# Bloc HTML sticky réaliste en Streamlit (simulateur sticky en haut de page)
+# CSS sticky + espace de compensation
 st.markdown(f"""
     <style>
-        .sticky-container {{
+        .sticky-question {{
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            padding: 1.2rem 1.5rem;
+            padding: 1rem 2rem;
             background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             border-bottom: 1px solid #ccc;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             z-index: 9999;
         }}
-        .spacer {{
-            height: 110px;
+        .content-offset {{
+            margin-top: 110px;
         }}
         .block-container {{
             padding-top: 0 !important;
         }}
     </style>
-
-    <div class="sticky-container">
+    <div class="sticky-question">
         <strong>❓ Question d’annotation :</strong><br>
         <span style="font-size: 1.1rem;">{current_biais["question_annotation"]}</span>
     </div>
-    <div class="spacer"></div>
+    <div class="content-offset"></div>
 """, unsafe_allow_html=True)
 
-
-# Définition du biais dans un expander
+# Définition du biais si besoin
 with st.expander("ℹ️ Voir la définition du biais si nécessaire"):
     st.markdown(current_biais["definition_operationnelle"])
 
 st.divider()
 
-# Annotation des 10 premiers titres
+# Annotation des titres
 annotations = []
 
 for i, row in df_titres.head(10).iterrows():
@@ -84,19 +82,16 @@ for i, row in df_titres.head(10).iterrows():
 
 st.divider()
 
-# Navigation entre biais et sauvegarde
+# Navigation et sauvegarde
 col1, col2, col3 = st.columns([1, 1, 2])
-
 with col1:
     if st.button("⬅️ Biais précédent", disabled=st.session_state.biais_index == 0):
         st.session_state.biais_index -= 1
         st.experimental_rerun()
-
 with col2:
     if st.button("➡️ Biais suivant", disabled=st.session_state.biais_index == len(df_biais) - 1):
         st.session_state.biais_index += 1
         st.experimental_rerun()
-
 with col3:
     if st.button("💾 Sauvegarder les annotations"):
         df_save = pd.DataFrame(annotations)
