@@ -1,79 +1,63 @@
 import streamlit as st
 import pandas as pd
-import random
-import io
-import os
 
-# --- Chargement des données ---
-biais_df = pd.read_csv("biais.csv", dtype={"index_biais": str})
+# Chargement des données
+df_titres = pd.read_csv("table_de_titres manipulatifs10.csv", sep=";")
+df_biais = pd.read_csv("biais_complet.csv")  # Ce fichier doit contenir les colonnes mentionnées
 
-# --- Chargement dynamique du fichier titres ---
-titres_file = next((f for f in os.listdir() if f.lower().startswith("titres") and f.lower().endswith((".csv", ".xlsx"))), None)
+# Initialisation
+if "biais_index" not in st.session_state:
+    st.session_state.biais_index = 0
 
-if titres_file:
-    if titres_file.endswith(".csv"):
-        titres_df = pd.read_csv(titres_file, sep=";")
-    else:
-        titres_df = pd.read_excel(titres_file)
-else:
-    st.error("Aucun fichier de titres trouvé. Assurez-vous qu’un fichier dont le nom commence par 'Titres' est présent.")
-    st.stop()
-
-# --- Initialisation session state ---
 if "annotations" not in st.session_state:
-    st.session_state.annotations = []
-if "current_biais" not in st.session_state:
-    st.session_state.current_biais = None
-if "current_titles" not in st.session_state:
-    st.session_state.current_titles = []
+    st.session_state.annotations = {}
 
-# --- Titre de l'application ---
-st.title("Annotation de biais cognitifs dans les titres de presse")
+# Navigation entre biais
+biais_list = df_biais["nom"].tolist()
+current_biais = df_biais.iloc[st.session_state.biais_index]
 
-# --- Entrée du nom de l'annotateur ---
-annotateur = st.text_input("Entrez votre nom d'annotateur :")
+# Affichage du biais
+st.title("Annotation de biais cognitifs dans les titres")
+st.subheader(f"Biais : {current_biais['nom']}")
+st.markdown(f"**Définition :** {current_biais['definition_operationnelle']}")
+st.markdown(f"**Structure cognitive :** {current_biais['structure_cognitive_typique']}")
 
-# --- Bouton pour générer un biais et 5 titres ---
-if annotateur:
-    if st.button("Générer un biais et 5 titres"):
-        st.session_state.current_biais = random.choice(biais_df['index_biais'].tolist())
-        st.session_state.current_titles = titres_df.sample(5).Titre.tolist()
+# Annotation des titres
+st.markdown("---")
+st.subheader("Titres à annoter")
 
-    # --- Affichage du biais et des titres côte à côte ---
-    if st.session_state.current_biais:
-        biais_info = biais_df[biais_df['index_biais'] == st.session_state.current_biais].iloc[0]
+for i, row in df_titres.head(10).iterrows():
+    titre = row["Titre"]
+    unique_id = f"{current_biais['nom']}_{i}"
+    st.markdown(f"**{i+1}.** {titre}")
+    st.radio(
+        f"Annotation pour ce titre [{i+1}]",
+        ["Non", "Doute", "Oui"],
+        key=unique_id,
+        horizontal=True
+    )
 
-        col1, col2 = st.columns(2)
+# Boutons de navigation
+col1, col2, col3 = st.columns([1, 1, 2])
 
-        with col1:
-            st.subheader(f"Biais à évaluer : {biais_info['nom']} ({biais_info['index_biais']})")
-            for col in ['mecanisme', 'declencheurs', 'exemple', 'faux_positif', 'validation']:
-                st.markdown(f"**{col.capitalize().replace('_', ' ')} :**  \n{biais_info[col]}")
-                st.markdown("")  # ligne vide
+with col1:
+    if st.button("⬅️ Biais précédent", disabled=st.session_state.biais_index == 0):
+        st.session_state.biais_index -= 1
 
-        with col2:
-            selected_titles = []
-            st.subheader("Titres à annoter")
-            for i, titre in enumerate(st.session_state.current_titles):
-                if st.checkbox(titre, key=f"titre_{i}"):
-                    selected_titles.append(titre)
+with col2:
+    if st.button("➡️ Biais suivant", disabled=st.session_state.biais_index == len(biais_list) - 1):
+        st.session_state.biais_index += 1
 
-            # --- Bouton de validation ---
-            if st.button("Enregistrer l'annotation"):
-                for titre in selected_titles:
-                    st.session_state.annotations.append({
-                        "annotateur": annotateur,
-                        "biais": st.session_state.current_biais,
-                        "nom_biais": biais_info['nom'],
-                        "titre": titre
-                    })
-                st.success("Annotations enregistrées !")
-
-    # --- Export des annotations ---
-    if st.session_state.annotations:
-        df_export = pd.DataFrame(st.session_state.annotations)
-        buffer = io.StringIO()
-        df_export.to_csv(buffer, index=False)
-        st.download_button("Télécharger les annotations", data=buffer.getvalue(), file_name="annotations.csv", mime="text/csv")
-else:
-    st.info("Veuillez entrer votre nom pour commencer.")
+with col3:
+    if st.button("💾 Sauvegarder les annotations"):
+        annotations = []
+        for i in df_titres.head(10).index:
+            unique_id = f"{current_biais['nom']}_{i}"
+            annotations.append({
+                "biais": current_biais['nom'],
+                "titre": df_titres.loc[i, "Titre"],
+                "annotation": st.session_state.get(unique_id, "Non")
+            })
+        df_out = pd.DataFrame(annotations)
+        df_out.to_csv("annotations_temp.csv", index=False)
+        st.success("Annotations sauvegardées dans annotations_temp.csv")
