@@ -2,37 +2,36 @@ import streamlit as st
 import pandas as pd
 import os
 
-# ─── 1. CONFIGURATION STREAMLIT ──────────────────────────────────────
+# 1. CONFIG
 st.set_page_config(page_title="Annotation biais", layout="wide")
 
-# ─── 2. CHARGEMENT DES FICHIERS ──────────────────────────────────────
+# 2. CHARGEMENT CSV
 titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
 
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
-    st.error("Fichiers manquants. Vérifie la présence des CSV dans le dossier.")
+    st.error("Fichiers manquants.")
     st.stop()
 
 df_titres = pd.read_csv(titre_path, sep=";")
 df_biais = pd.read_csv(biais_path)
 
-# ─── 3. SESSION STATE ────────────────────────────────────────────────
+# 3. SESSION
 if "biais_index" not in st.session_state:
     st.session_state.biais_index = 0
 
-# ─── 4. RÉCUPÉRATION DU BIAIS ACTUEL ─────────────────────────────────
+# 4. BIAIS COURANT
 current_biais = df_biais.iloc[st.session_state.biais_index]
 nom_biais = current_biais["nom"]
 
-# ─── 5. SIDEBAR : QUESTION D’ANNOTATION FIXE ─────────────────────────
+# 5. SIDEBAR FIXE
 with st.sidebar:
     st.markdown("## ❓ Question d’annotation")
     st.markdown(f"{current_biais['question_annotation']}")
-    st.markdown("---")
-    with st.expander("ℹ️ Voir la définition du biais si nécessaire"):
+    with st.expander(f"ℹ️ Définition du biais : {nom_biais}"):
         st.markdown(current_biais["definition_operationnelle"])
 
-# ─── 6. COLONNE PRINCIPALE : ANNOTATION DES TITRES ───────────────────
+# 6. ZONE CENTRALE
 st.markdown("## Titres à annoter")
 
 annotations = []
@@ -53,14 +52,13 @@ for i, row in df_titres.head(10).iterrows():
         "annotation": choix
     })
 
-# ─── 7. FONCTION : TOUS LES TITRES SONT-ILS ANNOTÉS ? ────────────────
+# 7. VALIDATION
 def tous_titres_annotés():
     return all(a["annotation"] in ["Oui", "Doute", "Non"] for a in annotations)
 
-# ─── 8. NAVIGATION & SAUVEGARDE AVEC CONTRÔLES ───────────────────────
+# 8. NAVIGATION
 st.divider()
 col1, col2, col3 = st.columns([1, 1, 2])
-
 go_next = False
 go_prev = False
 
@@ -94,16 +92,13 @@ with col3:
         else:
             st.warning("⚠️ Merci d’annoter tous les titres avant de sauvegarder.")
 
-# ─── 9. FORCER LE RERUN HORS DES BLOCS BOUTON ────────────────────────
+# 9. EXECUTION NAVIGATION
 if go_prev:
     st.session_state.biais_index -= 1
     st.experimental_rerun()
     st.stop()
-    return
 
 if go_next:
     st.session_state.biais_index += 1
     st.experimental_rerun()
     st.stop()
-    return
-
