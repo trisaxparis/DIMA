@@ -23,7 +23,7 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
-    # ✅ Réinitialisation corrigée
+    # ✅ Réinitialisation corrigée (sans bug)
     if st.sidebar.button("🧹 Réinitialiser tout"):
         if os.path.exists(save_path):
             os.remove(save_path)
@@ -66,7 +66,7 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # Présentation du biais dans la sidebar
+    # 🧠 Affichage du biais à gauche (sidebar)
     with st.sidebar:
         st.markdown("## ❓ Question")
         st.markdown(f"**{current_biais['question_annotation']}**")
