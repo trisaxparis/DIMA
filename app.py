@@ -23,12 +23,16 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
-    if st.sidebar.button("🧹 Réinitialiser tout"):
-        if os.path.exists(save_path):
-            os.remove(save_path)
-        for k in list(st.session_state.keys()):
-            del st.session_state[k]
-        st.experimental_rerun()
+   # Réinitialisation propre
+if st.sidebar.button("🧹 Réinitialiser tout"):
+    if os.path.exists(save_path):
+        os.remove(save_path)
+    # Supprime toutes les clés sauf les modules Streamlit
+    for k in list(st.session_state.keys()):
+        del st.session_state[k]
+    st.sidebar.success("Réinitialisation effectuée. Rechargement…")
+    st.rerun()
+
 
     if "biais_index" not in st.session_state:
         st.session_state.biais_index = 0
