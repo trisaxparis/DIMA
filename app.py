@@ -74,7 +74,14 @@ def main():
     for i, row in st.session_state.titres_random.iterrows():
         titre = row["Titre"]
         key = f"{nom_biais}_{i}"
-        st.markdown(f"**{i+1}.** {titre}")
+
+        # Espacement compact avant le titre
+        st.markdown(
+            f"""<div style='margin-bottom: 0.2rem; margin-top: 1.2rem; font-weight: 600;'>
+            {i+1}. {titre}
+            </div>""",
+            unsafe_allow_html=True
+        )
 
         likert_labels = {
             "1": "1 – Pas du tout",
@@ -90,6 +97,9 @@ def main():
             key=key,
             horizontal=True
         )
+
+        # Espacement réduit après l'échelle
+        st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
 
         annotations.append({
             "titre": titre,
