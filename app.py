@@ -6,9 +6,7 @@ import os
 st.set_page_config(page_title="Annotation biais", layout="wide")
 
 # 2. REDIRECTION SÛRE PAR FLAG
-if "redirect" in st.session_state:
-    del st.session_state["redirect"]
-    st.experimental_rerun()
+
 
 # 3. CHARGEMENT DES FICHIERS
 titre_path = "titres_manipulatifs10.csv"
@@ -104,3 +102,7 @@ with col3:
             st.success("🔖 Annotations sauvegardées !")
         else:
             st.warning("⚠️ Merci d’annoter tous les titres avant de sauvegarder.")
+# 9. Rediriger proprement si navigation déclenchée
+if "redirect" in st.session_state and st.session_state["redirect"]:
+    st.session_state["redirect"] = False
+    st.experimental_rerun()
