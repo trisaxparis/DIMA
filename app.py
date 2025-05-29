@@ -99,8 +99,11 @@ if go_prev:
     st.session_state.biais_index -= 1
     st.experimental_rerun()
     st.stop()
+    return
 
 if go_next:
     st.session_state.biais_index += 1
     st.experimental_rerun()
     st.stop()
+    return
+
