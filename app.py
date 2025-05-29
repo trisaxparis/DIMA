@@ -29,26 +29,32 @@ nom_biais = current_biais["nom"]
 # Bloc HTML sticky réaliste en Streamlit (simulateur sticky en haut de page)
 st.markdown(f"""
     <style>
-        .main .block-container {{
-            padding-top: 6rem;
-        }}
-        .sticky-header {{
+        .sticky-container {{
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            padding: 1rem 2rem;
+            padding: 1.2rem 1.5rem;
             background-color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             border-bottom: 1px solid #ccc;
-            z-index: 10000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 9999;
+        }}
+        .spacer {{
+            height: 110px;
+        }}
+        .block-container {{
+            padding-top: 0 !important;
         }}
     </style>
-    <div class="sticky-header">
+
+    <div class="sticky-container">
         <strong>❓ Question d’annotation :</strong><br>
         <span style="font-size: 1.1rem;">{current_biais["question_annotation"]}</span>
     </div>
+    <div class="spacer"></div>
 """, unsafe_allow_html=True)
+
 
 # Définition du biais dans un expander
 with st.expander("ℹ️ Voir la définition du biais si nécessaire"):
