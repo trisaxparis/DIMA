@@ -23,7 +23,8 @@ if "biais_index" not in st.session_state:
     st.session_state.biais_index = 0
 
 if "titres_random" not in st.session_state or st.session_state.get("reset_titres", False):
-    st.session_state.titres_random = df_titres_complet.sample(n=10).reset_index(drop=True)
+  nb_titres = min(10, len(df_titres_complet))
+st.session_state.titres_random = df_titres_complet.sample(n=nb_titres).reset_index(drop=True)
     st.session_state.reset_titres = False
 
 biais_index = st.session_state.biais_index
