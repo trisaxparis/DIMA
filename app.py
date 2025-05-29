@@ -56,6 +56,7 @@ def main():
         initiales = st.sidebar.text_input("🖊️ Vos initiales :")
         if initiales:
             st.session_state.initiales = initiales
+        st.stop()
     else:
         st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
 
@@ -66,7 +67,7 @@ def main():
         with st.expander("ℹ️ Définition du biais"):
             st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
-    # AFFICHAGE TITRES
+    # TITRES À ANNOTER
     annotations = []
     for i, row in st.session_state.titres_random.iterrows():
         titre = row["Titre"]
@@ -94,43 +95,4 @@ def main():
     st.divider()
     col1, col2, col3 = st.columns([1, 4, 1])
 
-    with col2:
-        if st.button("➡️ Biais suivant"):
-            if tous_titres_annotes() and st.session_state.initiales.strip():
-                df_save = pd.DataFrame(annotations)
-
-                if os.path.exists(save_path):
-                    df_existing = pd.read_csv(save_path)
-                    df_concat = pd.concat([df_existing, df_save], ignore_index=True)
-                else:
-                    df_concat = df_save
-
-                df_concat.to_csv(save_path, index=False)
-
-                # Nettoyage
-                for i in range(len(st.session_state.titres_random)):
-                    key = f"{nom_biais}_{i}"
-                    if key in st.session_state:
-                        del st.session_state[key]
-
-                # Passage au biais suivant
-                if biais_index < len(df_biais) - 1:
-                    st.session_state.biais_index += 1
-                    st.session_state.reset_titres = True
-                    st.session_state.trigger_rerun = True
-                else:
-                    st.success("🎉 Tous les biais ont été annotés.")
-            else:
-                if not st.session_state.initiales.strip():
-                    st.warning("⚠️ Merci d’entrer vos initiales avant d’annoter.")
-                else:
-                    st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
-
-    # TÉLÉCHARGEMENT
-    if os.path.exists(save_path):
-        st.sidebar.markdown("---")
-        with open(save_path, "rb") as f:
-            st.sidebar.download_button("📥 Télécharger annotations", f, file_name="annotations.csv")
-
-# LANCEMENT
-main()
+   
