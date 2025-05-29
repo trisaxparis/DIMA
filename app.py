@@ -9,6 +9,7 @@ titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
 save_path = "annotations_global.csv"
 
+# Gestion du rerun
 if "trigger_rerun" not in st.session_state:
     st.session_state.trigger_rerun = False
 elif st.session_state.trigger_rerun:
@@ -23,6 +24,7 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
+    # Réinitialisation propre
     if st.sidebar.button("🧹 Réinitialiser tout"):
         if os.path.exists(save_path):
             os.remove(save_path)
@@ -51,6 +53,7 @@ def main():
         st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
 
     biais_index = st.session_state.biais_index
+    df_biais = pd.read_csv(biais_path)
     current_biais = df_biais.iloc[biais_index]
     nom_biais = current_biais["nom"]
 
@@ -65,26 +68,21 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # -- CONTEXTE : colonne gauche
-    col1, col2 = st.columns([1.5, 3.5])
-
+    # Colonne de gauche : question fixe
+    col1, col2 = st.columns([1, 4])
     with col1:
-        st.markdown(f"### 🧠 Biais analysé : *{nom_biais}*")
-        st.markdown("#### ❓ Question d’annotation")
-        question_text = current_biais.get("question_annotation", "").strip()
-        st.markdown(f"<div style='font-size: 1.1rem; line-height: 1.6;'>{question_text}</div>", unsafe_allow_html=True)
+        st.markdown("## ❓ Question")
+        st.markdown(f"**{current_biais['question_annotation']}**")
+        with st.expander("ℹ️ Définition du biais"):
+            st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
-        if current_biais.get("definition_operationnelle"):
-            with st.expander("📚 Définition du biais"):
-                st.markdown(current_biais["definition_operationnelle"])
-
-    # -- ANNOTATIONS : colonne droite
+    annotations = []
     with col2:
-        annotations = []
         for i, row in st.session_state.titres_random.iterrows():
             titre = row["Titre"]
             key = f"{nom_biais}_{i}"
 
+            # Affichage du titre
             st.markdown(
                 f"""<div style='margin-bottom: 0.2rem; margin-top: 1.2rem; font-weight: 600;'>
                 {i+1}. {titre}
