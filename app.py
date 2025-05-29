@@ -9,7 +9,6 @@ titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
 save_path = "annotations_global.csv"
 
-# Gestion du rerun
 if "trigger_rerun" not in st.session_state:
     st.session_state.trigger_rerun = False
 elif st.session_state.trigger_rerun:
@@ -24,7 +23,7 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
-    # ✅ Réinitialisation fonctionnelle
+    # ✅ Réinitialisation corrigée
     if st.sidebar.button("🧹 Réinitialiser tout"):
         if os.path.exists(save_path):
             os.remove(save_path)
@@ -67,49 +66,48 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # Colonnes gauche (biais) / droite (titres)
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        st.markdown(f"#### 🧠 Biais analysé : *{nom_biais}*")
+    # Présentation du biais dans la sidebar
+    with st.sidebar:
         st.markdown("## ❓ Question")
         st.markdown(f"**{current_biais['question_annotation']}**")
         with st.expander("ℹ️ Définition du biais"):
             st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
     annotations = []
-    with col2:
-        for i, row in st.session_state.titres_random.iterrows():
-            titre = row["Titre"]
-            key = f"{nom_biais}_{i}"
+    for i, row in st.session_state.titres_random.iterrows():
+        titre = row["Titre"]
+        key = f"{nom_biais}_{i}"
 
-            st.markdown(
-                f"<div style='margin-bottom: 0.2rem; margin-top: 1.2rem; font-weight: 600;'>{i+1}. {titre}</div>",
-                unsafe_allow_html=True
-            )
+        st.markdown(
+            f"""<div style='margin-bottom: 0.2rem; margin-top: 1.2rem; font-weight: 600;'>
+            {i+1}. {titre}
+            </div>""",
+            unsafe_allow_html=True
+        )
 
-            likert_labels = {
-                "1": "1 – Pas du tout",
-                "2": "2 – Faiblement",
-                "3": "3 – Moyennement",
-                "4": "4 – Très présent"
-            }
+        likert_labels = {
+            "1": "1 – Pas du tout",
+            "2": "2 – Faiblement",
+            "3": "3 – Moyennement",
+            "4": "4 – Très présent"
+        }
 
-            choix = st.radio(
-                label="",
-                options=[""] + list(likert_labels.keys()),
-                format_func=lambda x: likert_labels.get(x, "Sélectionner"),
-                key=key,
-                horizontal=True
-            )
+        choix = st.radio(
+            label="",
+            options=[""] + list(likert_labels.keys()),
+            format_func=lambda x: likert_labels.get(x, "Sélectionner"),
+            key=key,
+            horizontal=True
+        )
 
-            st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
 
-            annotations.append({
-                "titre": titre,
-                "biais": nom_biais,
-                "annotation": choix,
-                "annotateur": st.session_state.initiales
-            })
+        annotations.append({
+            "titre": titre,
+            "biais": nom_biais,
+            "annotation": choix,
+            "annotateur": st.session_state.initiales
+        })
 
     def tous_titres_annotes():
         return all(a["annotation"] in ["1", "2", "3", "4"] for a in annotations)
