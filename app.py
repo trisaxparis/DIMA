@@ -26,25 +26,31 @@ if "annotations" not in st.session_state:
 current_biais = df_biais.iloc[st.session_state.biais_index]
 nom_biais = current_biais["nom"]
 
-# Affichage sticky de la question d’annotation
-question_html = f"""
-<style>
-.sticky-question {{
-    position: -webkit-sticky;
-    position: sticky;
-    top: 0;
-    background-color: #f0f2f6;
-    padding: 1rem;
-    border-bottom: 1px solid #ccc;
-    z-index: 999;
-}}
-</style>
-<div class="sticky-question">
-    <strong>❓ Question d’annotation :</strong><br>
-    {current_biais["question_annotation"]}
-</div>
-"""
-st.markdown(question_html, unsafe_allow_html=True)
+# Bloc HTML sticky réaliste en Streamlit (simulateur sticky en haut de page)
+st.markdown("""
+    <style>
+        .sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            background-color: #f9f9fa;
+            border-bottom: 1px solid #ccc;
+            z-index: 9999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .content-offset {
+            margin-top: 120px;
+        }
+    </style>
+    <div class="sticky-header">
+        <strong>❓ Question d’annotation :</strong><br>
+        <span style="font-size: 1.1rem;">""" + current_biais["question_annotation"] + """</span>
+    </div>
+    <div class="content-offset"></div>
+""", unsafe_allow_html=True)
+
 
 # Définition du biais dans un expander
 with st.expander("ℹ️ Voir la définition du biais si nécessaire"):
