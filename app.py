@@ -7,7 +7,7 @@ st.set_page_config(page_title="Annotation biais", layout="wide")
 
 # ─── 2. CHARGEMENT DES FICHIERS ──────────────────────────────────────
 titre_path = "titres_manipulatifs10.csv"
-biais_path = "biais_complet_avec_questions.csv"  # <- NOM FIXE ICI
+biais_path = "biais_complet_avec_questions.csv"
 
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
     st.error("Fichiers manquants. Vérifie la présence des CSV dans le dossier.")
@@ -53,38 +53,45 @@ for i, row in df_titres.head(10).iterrows():
         "annotation": choix
     })
 
-# ─── 7. NAVIGATION & SAUVEGARDE ──────────────────────────────────────
+# ─── 7. VÉRIFICATION COMPLÉTUDE ──────────────────────────────────────
+def tous_titres_annotés():
+    return all(a["annotation"] in ["Oui", "Doute", "Non"] for a in annotations)
+
+# ─── 8. NAVIGATION & SAUVEGARDE ──────────────────────────────────────
 st.divider()
 col1, col2, col3 = st.columns([1, 1, 2])
 
 with col1:
     if st.button("⬅️ Biais précédent", disabled=st.session_state.biais_index == 0):
-        if any(a["annotation"] for a in annotations if a["annotation"]):
+        if tous_titres_annotés():
             pd.DataFrame(annotations).to_csv(
                 f"annotations_{nom_biais.replace(' ', '_')}.csv",
                 index=False
             )
-        st.session_state.biais_index -= 1
-        st.experimental_rerun()
+            st.session_state.biais_index -= 1
+            st.experimental_rerun()
+        else:
+            st.warning("⚠️ Merci d’annoter chaque titre avant de continuer.")
 
 with col2:
     if st.button("➡️ Biais suivant", disabled=st.session_state.biais_index == len(df_biais) - 1):
-        if any(a["annotation"] for a in annotations if a["annotation"]):
+        if tous_titres_annotés():
             pd.DataFrame(annotations).to_csv(
                 f"annotations_{nom_biais.replace(' ', '_')}.csv",
                 index=False
             )
-        st.session_state.biais_index += 1
-        st.experimental_rerun()
+            st.session_state.biais_index += 1
+            st.experimental_rerun()
+        else:
+            st.warning("⚠️ Merci d’annoter chaque titre avant de continuer.")
 
 with col3:
     if st.button("💾 Sauvegarder"):
-        valid_annotations = [a for a in annotations if a["annotation"]]
-        if valid_annotations:
-            pd.DataFrame(valid_annotations).to_csv(
+        if tous_titres_annotés():
+            pd.DataFrame(annotations).to_csv(
                 f"annotations_{nom_biais.replace(' ', '_')}.csv",
                 index=False
             )
             st.success("🔖 Annotations sauvegardées !")
         else:
-            st.warning("Aucune annotation à sauvegarder.")
+            st.warning("⚠️ Merci d’annoter tous les titres avant de sauvegarder.")
