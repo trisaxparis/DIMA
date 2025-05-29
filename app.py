@@ -3,46 +3,39 @@ import pandas as pd
 import os
 
 # Configuration de la page
-st.set_page_config(page_title="Annotation de biais cognitifs", layout="centered")
+st.set_page_config(page_title="Annotation biais", layout="centered")
 
-# Chargement des fichiers
+# Chargement des fichiers nécessaires
 titre_path = "titres_manipulatifs10.csv"
-biais_path = "biais_complet_avec_questions.csv"
+biais_path = "biais_complet_final_questions.csv"
 
-# Vérification de présence
 if not os.path.exists(titre_path) or not os.path.exists(biais_path):
-    st.error("Fichiers manquants. Vérifie que les fichiers nécessaires sont dans le dossier.")
+    st.error("Fichiers manquants. Vérifie la présence de 'titres_manipulatifs10.csv' et 'biais_complet_final_questions.csv'.")
     st.stop()
 
-# Lecture des fichiers
 df_titres = pd.read_csv(titre_path, sep=";")
 df_biais = pd.read_csv(biais_path)
 
-# Initialisation de session
+# Initialiser la session
 if "biais_index" not in st.session_state:
     st.session_state.biais_index = 0
 if "annotations" not in st.session_state:
     st.session_state.annotations = {}
 
-# Récupération du biais courant
-biais_list = df_biais["nom"].tolist()
+# Récupérer le biais courant
 current_biais = df_biais.iloc[st.session_state.biais_index]
 nom_biais = current_biais["nom"]
 
-# Interface haut de page
-st.title("🧠 Annotation de biais cognitifs dans des titres de presse")
-st.markdown(f"### Biais analysé : {nom_biais}")
-st.markdown("#### ❓ Question d’annotation")
+# Affichage simplifié : uniquement la question et la définition sur demande
+st.markdown("### ❓ Question d’annotation")
 st.success(current_biais["question_annotation"])
 
-with st.expander("ℹ️ Voir la définition du biais"):
+with st.expander("ℹ️ Voir la définition du biais si nécessaire"):
     st.markdown(current_biais["definition_operationnelle"])
 
 st.divider()
 
 # Annotation des titres (10 premiers)
-st.markdown("### Titres à annoter")
-
 annotations = []
 
 for i, row in df_titres.head(10).iterrows():
@@ -50,7 +43,7 @@ for i, row in df_titres.head(10).iterrows():
     unique_key = f"{nom_biais}_{i}"
     st.markdown(f"**{i+1}.** {titre}")
     annotation = st.radio(
-        "Annotation",
+        "Sélectionner une option :",
         ["", "Oui", "Doute", "Non"],
         index=0,
         key=unique_key,
@@ -64,7 +57,7 @@ for i, row in df_titres.head(10).iterrows():
 
 st.divider()
 
-# Navigation et sauvegarde
+# Navigation entre biais et sauvegarde
 col1, col2, col3 = st.columns([1, 1, 2])
 
 with col1:
@@ -73,7 +66,7 @@ with col1:
         st.experimental_rerun()
 
 with col2:
-    if st.button("➡️ Biais suivant", disabled=st.session_state.biais_index == len(biais_list) - 1):
+    if st.button("➡️ Biais suivant", disabled=st.session_state.biais_index == len(df_biais) - 1):
         st.session_state.biais_index += 1
         st.experimental_rerun()
 
