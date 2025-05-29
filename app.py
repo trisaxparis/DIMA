@@ -18,21 +18,17 @@ if not os.path.exists(titre_path) or not os.path.exists(biais_path):
 df_titres_complet = pd.read_csv(titre_path, sep=";")
 df_biais = pd.read_csv(biais_path)
 
-# SESSION : initiales et index
+# SESSION : initialisation
 if "biais_index" not in st.session_state:
     st.session_state.biais_index = 0
 if "initiales" not in st.session_state:
     st.session_state.initiales = ""
-
-# IDENTIFICATION ANNOTATEUR
-st.sidebar.text_input("🖊️ Vos initiales :", key="initiales")
-
-# Tirage aléatoire des titres
 if "titres_random" not in st.session_state or st.session_state.get("reset_titres", False):
     nb_titres = min(10, len(df_titres_complet))
     st.session_state.titres_random = df_titres_complet.sample(n=nb_titres).reset_index(drop=True)
     st.session_state.reset_titres = False
 
+# VARIABLES COURANTES
 biais_index = st.session_state.biais_index
 current_biais = df_biais.iloc[biais_index]
 nom_biais = current_biais["nom"]
@@ -51,14 +47,17 @@ st.markdown(f"### 🔢 Avancement : {biais_annotes} / {total_biais} biais annot�
 st.progress(progression)
 st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-# SIDEBAR : question et définition
+# IDENTIFICATION ANNOTATEUR
+st.sidebar.text_input("🖊️ Vos initiales :", key="initiales")
+
+# QUESTION ET DEFINITION
 with st.sidebar:
     st.markdown("## ❓ Question")
     st.markdown(f"**{current_biais['question_annotation']}**")
     with st.expander("ℹ️ Définition du biais"):
         st.markdown(current_biais["definition_operationnelle"])
 
-# TITRES À ANNOTER
+# AFFICHAGE DES TITRES À ANNOTER
 annotations = []
 for i, row in st.session_state.titres_random.iterrows():
     titre = row["Titre"]
@@ -99,16 +98,17 @@ with col2:
 
             df_concat.to_csv(save_path, index=False)
 
+            # Nettoyage
             for i in range(len(st.session_state.titres_random)):
                 key = f"{nom_biais}_{i}"
                 if key in st.session_state:
                     del st.session_state[key]
 
-            st.session_state.reset_titres = True
-
+            # Passage au biais suivant
             if biais_index < len(df_biais) - 1:
                 st.session_state.biais_index += 1
-                st.experimental_rerun()
+                st.session_state.reset_titres = True
+                st.success("✅ Biais suivant prêt à annoter.")
             else:
                 st.success("🎉 Tous les biais ont été annotés.")
         else:
@@ -117,7 +117,7 @@ with col2:
             else:
                 st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
 
-# TÉLÉCHARGEMENT DES ANNOTATIONS
+# TÉLÉCHARGEMENT DES RÉSULTATS
 if os.path.exists(save_path):
     st.sidebar.markdown("---")
     with open(save_path, "rb") as f:
