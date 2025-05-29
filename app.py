@@ -67,14 +67,17 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # Colonne de gauche : contexte du biais
-    col1, col2 = st.columns([1, 4])
+    # Colonnes : contexte (gauche) / titres (droite)
+    col1, col2 = st.columns([1.5, 3.5])
+
     with col1:
-        st.markdown(f"#### 🧠 Biais analysé : *{nom_biais}*")
-        st.markdown("## ❓ Question")
-        st.markdown(f"**{current_biais['question_annotation']}**")
+        st.markdown("### 🧠 Biais analysé")
+        st.markdown(f"## 🎯 *{nom_biais}*")
+        st.markdown("### ❓ Question")
+        st.markdown(f"{current_biais['question_annotation']}")
+        st.markdown("### 📚 Définition")
         with st.expander("ℹ️ Définition du biais"):
-            st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
+            st.markdown(current_biais["definition_operationnelle"])
 
     annotations = []
     with col2:
