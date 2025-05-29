@@ -33,15 +33,18 @@ def main():
         st.session_state.reset_titres = False
 
     # IDENTIFICATION ANNOTATEUR
-    if "initiales" not in st.session_state or not st.session_state.initiales:
-        initiales = st.sidebar.text_input("🖊️ Vos initiales :")
-        if initiales:
-            st.session_state.initiales = initiales
-            st.experimental_rerun()
-        else:
-            st.stop()
+if "initiales" not in st.session_state or not st.session_state.initiales:
+    initiales = st.sidebar.text_input("🖊️ Vos initiales :")
+    if initiales:
+        st.session_state.initiales = initiales
+        st.experimental_rerun()
     else:
-        st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
+        st.title("🧠 Annotation des biais cognitifs")
+        st.warning("Merci de saisir vos initiales dans la colonne de gauche pour commencer.")
+        st.stop()
+else:
+    st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
+
 
     # COURANT
     biais_index = st.session_state.biais_index
