@@ -71,13 +71,17 @@ def main():
     col1, col2 = st.columns([1.5, 3.5])
 
     with col1:
-        st.markdown("### 🧠 Biais analysé")
-        st.markdown(f"## 🎯 *{nom_biais}*")
-        st.markdown("### ❓ Question")
-        st.markdown(f"{current_biais['question_annotation']}")
-        st.markdown("### 📚 Définition")
-        with st.expander("ℹ️ Définition du biais"):
-            st.markdown(current_biais["definition_operationnelle"])
+        st.markdown(f"### 🧠 Biais analysé : *{nom_biais}*")
+
+        st.markdown("#### ❓ Question d’annotation")
+        question_text = current_biais.get("question_annotation", "").strip()
+        st.markdown(f"<div style='margin-top: 0.5rem; font-size: 1.1rem;'>{question_text}</div>", unsafe_allow_html=True)
+
+        definition = current_biais.get("definition_operationnelle", "").strip()
+        if definition:
+            st.markdown("#### 📚 Définition")
+            with st.expander("Afficher la définition du biais"):
+                st.markdown(definition)
 
     annotations = []
     with col2:
