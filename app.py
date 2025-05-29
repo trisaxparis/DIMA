@@ -53,23 +53,24 @@ for i, row in df_titres.head(10).iterrows():
         "annotation": choix
     })
 
-# ─── 7. VÉRIFICATION COMPLÉTUDE ──────────────────────────────────────
+# ─── 7. FONCTION : TOUS LES TITRES SONT-ILS ANNOTÉS ? ────────────────
 def tous_titres_annotés():
     return all(a["annotation"] in ["Oui", "Doute", "Non"] for a in annotations)
 
-# ─── 8. NAVIGATION & SAUVEGARDE ──────────────────────────────────────
+# ─── 8. NAVIGATION & SAUVEGARDE AVEC CONTRÔLES ───────────────────────
 st.divider()
 col1, col2, col3 = st.columns([1, 1, 2])
+
+go_next = False
+go_prev = False
 
 with col1:
     if st.button("⬅️ Biais précédent", disabled=st.session_state.biais_index == 0):
         if tous_titres_annotés():
             pd.DataFrame(annotations).to_csv(
-                f"annotations_{nom_biais.replace(' ', '_')}.csv",
-                index=False
+                f"annotations_{nom_biais.replace(' ', '_')}.csv", index=False
             )
-            st.session_state.biais_index -= 1
-            st.experimental_rerun()
+            go_prev = True
         else:
             st.warning("⚠️ Merci d’annoter chaque titre avant de continuer.")
 
@@ -77,11 +78,9 @@ with col2:
     if st.button("➡️ Biais suivant", disabled=st.session_state.biais_index == len(df_biais) - 1):
         if tous_titres_annotés():
             pd.DataFrame(annotations).to_csv(
-                f"annotations_{nom_biais.replace(' ', '_')}.csv",
-                index=False
+                f"annotations_{nom_biais.replace(' ', '_')}.csv", index=False
             )
-            st.session_state.biais_index += 1
-            st.experimental_rerun()
+            go_next = True
         else:
             st.warning("⚠️ Merci d’annoter chaque titre avant de continuer.")
 
@@ -89,9 +88,17 @@ with col3:
     if st.button("💾 Sauvegarder"):
         if tous_titres_annotés():
             pd.DataFrame(annotations).to_csv(
-                f"annotations_{nom_biais.replace(' ', '_')}.csv",
-                index=False
+                f"annotations_{nom_biais.replace(' ', '_')}.csv", index=False
             )
             st.success("🔖 Annotations sauvegardées !")
         else:
             st.warning("⚠️ Merci d’annoter tous les titres avant de sauvegarder.")
+
+# ─── 9. FORCER LE RERUN HORS DES BLOCS BOUTON ────────────────────────
+if go_prev:
+    st.session_state.biais_index -= 1
+    st.experimental_rerun()
+
+if go_next:
+    st.session_state.biais_index += 1
+    st.experimental_rerun()
