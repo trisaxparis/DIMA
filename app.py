@@ -85,31 +85,28 @@ st.divider()
 col1, col2 = st.columns([1, 4])
 
 with col2:
-    if st.button("➡️ Biais suivant"):
-        if tous_titres_annotes():
-            df_save = pd.DataFrame(annotations)
+  if st.button("➡️ Biais suivant"):
+    if tous_titres_annotes():
+        df_save = pd.DataFrame(annotations)
 
-            if os.path.exists(save_path):
-                df_existing = pd.read_csv(save_path)
-                df_concat = pd.concat([df_existing, df_save], ignore_index=True)
-            else:
-                df_concat = df_save
-
-            df_concat.to_csv(save_path, index=False)
-
-            for i in range(len(st.session_state.titres_random)):
-                key = f"{nom_biais}_{i}"
-                if key in st.session_state:
-                    del st.session_state[key]
-
-            st.session_state.reset_titres = True
-
-            if biais_index < len(df_biais) - 1:
-                st.session_state.biais_index += 1
-                st.stop()
-                st.experimental_rerun()
-
-            else:
-                st.success("🎉 Tous les biais ont été annotés.")
+        if os.path.exists(save_path):
+            df_existing = pd.read_csv(save_path)
+            df_concat = pd.concat([df_existing, df_save], ignore_index=True)
         else:
-            st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
+            df_concat = df_save
+
+        df_concat.to_csv(save_path, index=False)
+
+        for i in range(len(st.session_state.titres_random)):
+            key = f"{nom_biais}_{i}"
+            if key in st.session_state:
+                del st.session_state[key]
+
+        st.session_state.reset_titres = True
+
+        if biais_index < len(df_biais) - 1:
+            st.session_state.biais_index += 1
+        else:
+            st.success("🎉 Tous les biais ont été annotés.")
+    else:
+        st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
