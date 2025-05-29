@@ -44,11 +44,12 @@ for i, row in df_titres.head(10).iterrows():
     unique_key = f"{nom_biais}_{i}"
     st.markdown(f"**{i+1}.** {titre}")
     annotation = st.radio(
-        f"Ce biais est-il présent dans ce titre ?",
-        ["Non", "Doute", "Oui"],
-        key=unique_key,
-        horizontal=True,
-    )
+    f"Ce biais est-il présent dans ce titre ?",
+    ["", "Oui", "Doute", "Non"],
+    index=0,
+    key=unique_key,
+    horizontal=True
+)
     annotations.append({
         "titre": titre,
         "biais": nom_biais,
