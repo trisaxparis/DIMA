@@ -76,39 +76,19 @@ def main():
         key = f"{nom_biais}_{i}"
         st.markdown(f"**{i+1}.** {titre}")
 
+        likert_labels = {
+            "1": "1 – Pas du tout",
+            "2": "2 – Faiblement",
+            "3": "3 – Moyennement",
+            "4": "4 – Très présent"
+        }
+
         choix = st.radio(
             label="",
-            options=["", "1", "2", "3", "4"],
+            options=[""] + list(likert_labels.keys()),
+            format_func=lambda x: likert_labels.get(x, "Sélectionner"),
             key=key,
-            format_func=lambda x: " " if x == "" else x,
             horizontal=True
-        )
-
-        # Texte d'accompagnement sous forme alignée
-        st.markdown(
-            """
-            <style>
-            .likert-description {
-                display: flex;
-                justify-content: space-around;
-                margin-top: -0.3em;
-                margin-bottom: 1.5em;
-                font-size: 0.85em;
-                color: #444;
-            }
-            .likert-description span {
-                width: 5em;
-                text-align: center;
-            }
-            </style>
-            <div class='likert-description'>
-                <span>Pas du tout</span>
-                <span>Faiblement</span>
-                <span>Moyennement</span>
-                <span>Très présent</span>
-            </div>
-            """,
-            unsafe_allow_html=True
         )
 
         annotations.append({
