@@ -92,13 +92,21 @@ with col3:
         else:
             st.warning("⚠️ Merci d’annoter tous les titres avant de sauvegarder.")
 
-# 9. EXECUTION NAVIGATION
+# 9. EXECUTION NAVIGATION avec nettoyage des clés
 if go_prev:
+    for i in range(10):
+        key = f"{nom_biais}_{i}"
+        if key in st.session_state:
+            del st.session_state[key]
     st.session_state.biais_index -= 1
     st.experimental_rerun()
     st.stop()
 
 if go_next:
+    for i in range(10):
+        key = f"{nom_biais}_{i}"
+        if key in st.session_state:
+            del st.session_state[key]
     st.session_state.biais_index += 1
     st.experimental_rerun()
     st.stop()
