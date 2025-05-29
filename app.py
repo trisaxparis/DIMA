@@ -16,18 +16,18 @@ if not os.path.exists(titre_path) or not os.path.exists(biais_path):
 df_titres = pd.read_csv(titre_path, sep=";")
 df_biais = pd.read_csv(biais_path)
 
-# Initialiser la session
+# Initialisation des variables de session
 if "biais_index" not in st.session_state:
     st.session_state.biais_index = 0
 if "annotations" not in st.session_state:
     st.session_state.annotations = {}
 
-# Récupérer le biais courant
+# Récupération du biais courant
 current_biais = df_biais.iloc[st.session_state.biais_index]
 nom_biais = current_biais["nom"]
 
-# Affichage simplifié : uniquement la question et la définition sur demande
-st.markdown("### ❓ Question d’annotation")
+# Affichage uniquement de la question, sans nom de biais ni titre
+st.markdown("#### ❓ Question d’annotation")
 st.success(current_biais["question_annotation"])
 
 with st.expander("ℹ️ Voir la définition du biais si nécessaire"):
@@ -35,7 +35,7 @@ with st.expander("ℹ️ Voir la définition du biais si nécessaire"):
 
 st.divider()
 
-# Annotation des titres (10 premiers)
+# Annotation de 10 titres (fixés ici pour l'exemple)
 annotations = []
 
 for i, row in df_titres.head(10).iterrows():
