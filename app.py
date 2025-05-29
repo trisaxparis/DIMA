@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 
-# ⛑ Redémarrage automatique après changement d’état
+# Redémarrage automatique après changement d’état
 if "trigger_rerun" in st.session_state and st.session_state.trigger_rerun:
     st.session_state.trigger_rerun = False
     st.rerun()
@@ -27,8 +27,6 @@ def main():
     # SESSION
     if "biais_index" not in st.session_state:
         st.session_state.biais_index = 0
-    if "initiales" not in st.session_state:
-        st.session_state.initiales = ""
     if "titres_random" not in st.session_state or st.session_state.get("reset_titres", False):
         nb_titres = min(10, len(df_titres_complet))
         st.session_state.titres_random = df_titres_complet.sample(n=nb_titres).reset_index(drop=True)
@@ -54,7 +52,12 @@ def main():
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
     # IDENTIFICATION
-    st.sidebar.text_input("🖊️ Vos initiales :", key="initiales")
+    if "initiales" not in st.session_state or not st.session_state.initiales:
+        initiales = st.sidebar.text_input("🖊️ Vos initiales :")
+        if initiales:
+            st.session_state.initiales = initiales
+    else:
+        st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
 
     # QUESTION & DÉFINITION
     with st.sidebar:
