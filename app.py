@@ -19,7 +19,6 @@ biais_path = "biais_complet_avec_questions.csv"
 save_path = "annotations_global.csv"
 
 def main():
-    # CHARGEMENT
     if not os.path.exists(titre_path) or not os.path.exists(biais_path):
         st.error("Fichiers manquants.")
         st.stop()
@@ -27,7 +26,6 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
-    # BOUTON DE RÉINITIALISATION
     if st.sidebar.button("🧹 Réinitialiser tout"):
         if os.path.exists(save_path):
             os.remove(save_path)
@@ -35,15 +33,12 @@ def main():
             del st.session_state[k]
         st.experimental_rerun()
 
-    # INITIALISATION SESSION
     if "biais_index" not in st.session_state:
         st.session_state.biais_index = 0
     if "titres_random" not in st.session_state or st.session_state.get("reset_titres", False):
-        nb_titres = min(10, len(df_titres_complet))
-        st.session_state.titres_random = df_titres_complet.sample(n=nb_titres).reset_index(drop=True)
+        st.session_state.titres_random = df_titres_complet.sample(n=min(10, len(df_titres_complet))).reset_index(drop=True)
         st.session_state.reset_titres = False
 
-    # IDENTIFICATION ANNOTATEUR
     if "initiales" not in st.session_state or not st.session_state.initiales:
         initiales = st.sidebar.text_input("🖊️ Vos initiales :")
         if initiales:
@@ -57,12 +52,10 @@ def main():
     else:
         st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
 
-    # COURANT
     biais_index = st.session_state.biais_index
     current_biais = df_biais.iloc[biais_index]
     nom_biais = current_biais["nom"]
 
-    # PROGRESSION
     if os.path.exists(save_path):
         df_saved = pd.read_csv(save_path)
         biais_annotes = df_saved["biais"].nunique()
@@ -76,34 +69,46 @@ def main():
     st.progress(progression)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # QUESTION & DÉFINITION
     with st.sidebar:
         st.markdown("## ❓ Question")
         st.markdown(f"**{current_biais['question_annotation']}**")
         with st.expander("ℹ️ Définition du biais"):
             st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
-    # TITRES À ANNOTER
     annotations = []
     for i, row in st.session_state.titres_random.iterrows():
         titre = row["Titre"]
         key = f"{nom_biais}_{i}"
         st.markdown(f"**{i+1}.** {titre}")
 
+        st.markdown("<div style='margin-top: -1.5em;'></div>", unsafe_allow_html=True)
         choix = st.radio(
             label="",
             options=["", "1", "2", "3", "4"],
             key=key,
             horizontal=True
         )
-
         st.markdown(
             """
-            <div style='display: flex; justify-content: space-between; font-size: 0.9em; padding: 0 1em;'>
-                <span>1 – Pas du tout présent</span>
-                <span>2 – Faiblement présent</span>
-                <span>3 – Moyennement présent</span>
-                <span>4 – Très présent</span>
+            <style>
+            .description-row {
+                display: flex;
+                justify-content: space-around;
+                margin-top: -0.2em;
+                margin-bottom: 1.5em;
+                font-size: 0.85em;
+                color: #444;
+            }
+            .description-row span {
+                width: 4em;
+                text-align: center;
+            }
+            </style>
+            <div class='description-row'>
+                <span>1<br>Pas du tout</span>
+                <span>2<br>Faiblement</span>
+                <span>3<br>Moyennement</span>
+                <span>4<br>Très présent</span>
             </div>
             """,
             unsafe_allow_html=True
@@ -116,32 +121,25 @@ def main():
             "annotateur": st.session_state.initiales
         })
 
-    # VALIDATION
     def tous_titres_annotes():
         return all(a["annotation"] in ["1", "2", "3", "4"] for a in annotations)
 
-    # NAVIGATION
     st.divider()
     col1, col2, col3 = st.columns([1, 4, 1])
-
     with col2:
         if st.button("➡️ Biais suivant"):
             if tous_titres_annotes():
                 df_save = pd.DataFrame(annotations)
-
                 if os.path.exists(save_path):
                     df_existing = pd.read_csv(save_path)
                     df_concat = pd.concat([df_existing, df_save], ignore_index=True)
                 else:
                     df_concat = df_save
-
                 df_concat.to_csv(save_path, index=False)
-
                 for i in range(len(st.session_state.titres_random)):
                     key = f"{nom_biais}_{i}"
                     if key in st.session_state:
                         del st.session_state[key]
-
                 if biais_index < len(df_biais) - 1:
                     st.session_state.biais_index += 1
                     st.session_state.reset_titres = True
@@ -157,5 +155,4 @@ def main():
         with open(save_path, "rb") as f:
             st.sidebar.download_button("📥 Télécharger annotations", f, file_name="annotations.csv")
 
-# LANCEMENT
 main()
