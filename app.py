@@ -3,20 +3,17 @@ import pandas as pd
 import streamlit as st
 import os
 
-# Redémarrage contrôlé
+st.set_page_config(page_title="Annotation biais", layout="wide")
+
+titre_path = "titres_manipulatifs10.csv"
+biais_path = "biais_complet_avec_questions.csv"
+save_path = "annotations_global.csv"
+
 if "trigger_rerun" not in st.session_state:
     st.session_state.trigger_rerun = False
 elif st.session_state.trigger_rerun:
     st.session_state.trigger_rerun = False
     st.rerun()
-
-# CONFIG
-st.set_page_config(page_title="Annotation biais", layout="wide")
-
-# PATHS
-titre_path = "titres_manipulatifs10.csv"
-biais_path = "biais_complet_avec_questions.csv"
-save_path = "annotations_global.csv"
 
 def main():
     if not os.path.exists(titre_path) or not os.path.exists(biais_path):
@@ -63,10 +60,8 @@ def main():
         biais_annotes = 0
 
     total_biais = len(df_biais)
-    progression = biais_annotes / total_biais
-
     st.markdown(f"### 🔢 Avancement : {biais_annotes} / {total_biais} biais annotés")
-    st.progress(progression)
+    st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
     with st.sidebar:
@@ -81,34 +76,36 @@ def main():
         key = f"{nom_biais}_{i}"
         st.markdown(f"**{i+1}.** {titre}")
 
-        st.markdown("<div style='margin-top: -1.5em;'></div>", unsafe_allow_html=True)
         choix = st.radio(
             label="",
             options=["", "1", "2", "3", "4"],
             key=key,
+            format_func=lambda x: " " if x == "" else x,
             horizontal=True
         )
+
+        # Texte d'accompagnement sous forme alignée
         st.markdown(
             """
             <style>
-            .description-row {
+            .likert-description {
                 display: flex;
                 justify-content: space-around;
-                margin-top: -0.2em;
+                margin-top: -0.3em;
                 margin-bottom: 1.5em;
                 font-size: 0.85em;
                 color: #444;
             }
-            .description-row span {
-                width: 4em;
+            .likert-description span {
+                width: 5em;
                 text-align: center;
             }
             </style>
-            <div class='description-row'>
-                <span>1<br>Pas du tout</span>
-                <span>2<br>Faiblement</span>
-                <span>3<br>Moyennement</span>
-                <span>4<br>Très présent</span>
+            <div class='likert-description'>
+                <span>Pas du tout</span>
+                <span>Faiblement</span>
+                <span>Moyennement</span>
+                <span>Très présent</span>
             </div>
             """,
             unsafe_allow_html=True
