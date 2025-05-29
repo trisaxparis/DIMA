@@ -1,63 +1,78 @@
 import streamlit as st
 import pandas as pd
+import os
 
-# Chargement des données
-df_titres = pd.read_csv("table_de_titres manipulatifs10.csv", sep=";")
-df_biais = pd.read_csv("biais_complet.csv")  # Ce fichier doit contenir les colonnes mentionnées
+# Configuration de la page
+st.set_page_config(page_title="Annotation de biais cognitifs", layout="centered")
 
-# Initialisation
+# Chargement des données avec vérification
+titre_path = "titres_manipulatifs10.csv"
+biais_path = "biais_complet.csv"
+
+if not os.path.exists(titre_path) or not os.path.exists(biais_path):
+    st.error("Fichiers manquants. Vérifie que 'titres_manipulatifs10.csv' et 'biais_complet.csv' sont bien présents.")
+    st.stop()
+
+df_titres = pd.read_csv(titre_path, sep=";")
+df_biais = pd.read_csv(biais_path)
+
+# Initialisation de la session
 if "biais_index" not in st.session_state:
     st.session_state.biais_index = 0
-
 if "annotations" not in st.session_state:
     st.session_state.annotations = {}
 
-# Navigation entre biais
+# Variables utiles
 biais_list = df_biais["nom"].tolist()
 current_biais = df_biais.iloc[st.session_state.biais_index]
+nom_biais = current_biais["nom"]
 
-# Affichage du biais
-st.title("Annotation de biais cognitifs dans les titres")
-st.subheader(f"Biais : {current_biais['nom']}")
-st.markdown(f"**Définition :** {current_biais['definition_operationnelle']}")
+# Affichage du biais sélectionné
+st.title("🧠 Annotation de biais cognitifs")
+st.markdown(f"### Biais analysé : {nom_biais}")
+st.info(f"**Définition :** {current_biais['definition_operationnelle']}")
 st.markdown(f"**Structure cognitive :** {current_biais['structure_cognitive_typique']}")
 
-# Annotation des titres
-st.markdown("---")
-st.subheader("Titres à annoter")
+st.divider()
+
+# Annotation de 10 titres
+st.markdown("### Titres à annoter (10 affichés)")
+annotations = []
 
 for i, row in df_titres.head(10).iterrows():
     titre = row["Titre"]
-    unique_id = f"{current_biais['nom']}_{i}"
+    unique_key = f"{nom_biais}_{i}"
     st.markdown(f"**{i+1}.** {titre}")
-    st.radio(
-        f"Annotation pour ce titre [{i+1}]",
+    annotation = st.radio(
+        f"Ce biais est-il présent dans ce titre ?",
         ["Non", "Doute", "Oui"],
-        key=unique_id,
-        horizontal=True
+        key=unique_key,
+        horizontal=True,
     )
+    annotations.append({
+        "titre": titre,
+        "biais": nom_biais,
+        "annotation": annotation,
+    })
 
-# Boutons de navigation
+st.divider()
+
+# Navigation entre biais
 col1, col2, col3 = st.columns([1, 1, 2])
-
 with col1:
     if st.button("⬅️ Biais précédent", disabled=st.session_state.biais_index == 0):
         st.session_state.biais_index -= 1
+        st.experimental_rerun()
 
 with col2:
     if st.button("➡️ Biais suivant", disabled=st.session_state.biais_index == len(biais_list) - 1):
         st.session_state.biais_index += 1
+        st.experimental_rerun()
 
 with col3:
     if st.button("💾 Sauvegarder les annotations"):
-        annotations = []
-        for i in df_titres.head(10).index:
-            unique_id = f"{current_biais['nom']}_{i}"
-            annotations.append({
-                "biais": current_biais['nom'],
-                "titre": df_titres.loc[i, "Titre"],
-                "annotation": st.session_state.get(unique_id, "Non")
-            })
-        df_out = pd.DataFrame(annotations)
-        df_out.to_csv("annotations_temp.csv", index=False)
-        st.success("Annotations sauvegardées dans annotations_temp.csv")
+        df_save = pd.DataFrame(annotations)
+        save_path = f"annotations_{nom_biais.replace(' ', '_')}.csv"
+        df_save.to_csv(save_path, index=False)
+        st.success(f"Annotations sauvegardées dans `{save_path}`")
+
