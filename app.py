@@ -26,6 +26,14 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
+    # BOUTON DE RÉINITIALISATION
+    if st.sidebar.button("🧹 Réinitialiser tout"):
+        if os.path.exists(save_path):
+            os.remove(save_path)
+        for k in list(st.session_state.keys()):
+            del st.session_state[k]
+        st.experimental_rerun()
+
     # INITIALISATION SESSION
     if "biais_index" not in st.session_state:
         st.session_state.biais_index = 0
@@ -74,18 +82,22 @@ def main():
         with st.expander("ℹ️ Définition du biais"):
             st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
-    # TITRES À ANNOTER
+    # TITRES À ANNOTER (avec échelle de Likert)
     annotations = []
     for i, row in st.session_state.titres_random.iterrows():
         titre = row["Titre"]
         key = f"{nom_biais}_{i}"
         st.markdown(f"**{i+1}.** {titre}")
         choix = st.radio(
-            "Réponse :",
-            ["", "Oui", "Doute", "Non"],
-            index=0,
+            label="",
+            options=[
+                "1 – Pas du tout présent",
+                "2 – Faiblement présent",
+                "3 – Moyennement présent",
+                "4 – Très présent"
+            ],
             key=key,
-            horizontal=True
+            horizontal=False
         )
         annotations.append({
             "titre": titre,
@@ -96,7 +108,12 @@ def main():
 
     # VALIDATION
     def tous_titres_annotes():
-        return all(a["annotation"] in ["Oui", "Doute", "Non"] for a in annotations)
+        return all(a["annotation"] in [
+            "1 – Pas du tout présent",
+            "2 – Faiblement présent",
+            "3 – Moyennement présent",
+            "4 – Très présent"
+        ] for a in annotations)
 
     # NAVIGATION
     st.divider()
