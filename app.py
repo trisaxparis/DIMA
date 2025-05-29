@@ -32,6 +32,17 @@ def main():
         st.session_state.titres_random = df_titres_complet.sample(n=nb_titres).reset_index(drop=True)
         st.session_state.reset_titres = False
 
+    # IDENTIFICATION ANNOTATEUR
+    if "initiales" not in st.session_state or not st.session_state.initiales:
+        initiales = st.sidebar.text_input("🖊️ Vos initiales :")
+        if initiales:
+            st.session_state.initiales = initiales
+            st.experimental_rerun()
+        else:
+            st.stop()
+    else:
+        st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
+
     # COURANT
     biais_index = st.session_state.biais_index
     current_biais = df_biais.iloc[biais_index]
@@ -50,15 +61,6 @@ def main():
     st.markdown(f"### 🔢 Avancement : {biais_annotes} / {total_biais} biais annotés")
     st.progress(progression)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
-
-    # IDENTIFICATION
-    if "initiales" not in st.session_state or not st.session_state.initiales:
-        initiales = st.sidebar.text_input("🖊️ Vos initiales :")
-        if initiales:
-            st.session_state.initiales = initiales
-        st.stop()
-    else:
-        st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
 
     # QUESTION & DÉFINITION
     with st.sidebar:
@@ -95,4 +97,40 @@ def main():
     st.divider()
     col1, col2, col3 = st.columns([1, 4, 1])
 
-   
+    with col2:
+        if st.button("➡️ Biais suivant"):
+            if tous_titres_annotes():
+                df_save = pd.DataFrame(annotations)
+
+                if os.path.exists(save_path):
+                    df_existing = pd.read_csv(save_path)
+                    df_concat = pd.concat([df_existing, df_save], ignore_index=True)
+                else:
+                    df_concat = df_save
+
+                df_concat.to_csv(save_path, index=False)
+
+                # Nettoyage
+                for i in range(len(st.session_state.titres_random)):
+                    key = f"{nom_biais}_{i}"
+                    if key in st.session_state:
+                        del st.session_state[key]
+
+                # Passage au biais suivant
+                if biais_index < len(df_biais) - 1:
+                    st.session_state.biais_index += 1
+                    st.session_state.reset_titres = True
+                    st.session_state.trigger_rerun = True
+                else:
+                    st.success("🎉 Tous les biais ont été annotés.")
+            else:
+                st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
+
+    # TÉLÉCHARGEMENT
+    if os.path.exists(save_path):
+        st.sidebar.markdown("---")
+        with open(save_path, "rb") as f:
+            st.sidebar.download_button("📥 Télécharger annotations", f, file_name="annotations.csv")
+
+# LANCEMENT
+main()
