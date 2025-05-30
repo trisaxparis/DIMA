@@ -3,16 +3,16 @@ import pandas as pd
 import streamlit as st
 import os
 
-# Toujours défini en premier
 st.set_page_config(page_title="Annotation biais", layout="wide")
 
-# Choix du mode dans la sidebar
-mode = st.sidebar.radio("🎛️ Mode d'affichage", ["💻 Desktop", "📱 Mobile"])
-
-# Chemins
 titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
 save_path = "annotations_global.csv"
+
+# Choix du mode d'affichage
+if "affichage" not in st.session_state:
+    st.session_state.affichage = "💻 Desktop"
+mode = st.radio("🎛️ Choisir le mode d'affichage :", ["💻 Desktop", "📱 Mobile"], key="affichage", horizontal=True)
 
 # Gestion du rerun
 if "trigger_rerun" not in st.session_state:
@@ -37,24 +37,24 @@ def main():
         st.sidebar.success("Réinitialisation effectuée. Rechargement…")
         st.rerun()
 
-    if "biais_index" not in st.session_state:
-        st.session_state.biais_index = 0
-    if "titres_random" not in st.session_state or st.session_state.get("reset_titres", False):
-        st.session_state.titres_random = df_titres_complet.sample(n=min(10, len(df_titres_complet))).reset_index(drop=True)
-        st.session_state.reset_titres = False
-
+    # Saisie initiales (toujours visible)
     if "initiales" not in st.session_state or not st.session_state.initiales:
-        initiales = st.sidebar.text_input("🖊️ Vos initiales :")
+        initiales = st.text_input("🖊️ Vos initiales :")
         if initiales:
             st.session_state.initiales = initiales
             st.session_state.trigger_rerun = True
             st.rerun()
         else:
-            st.title("🧠 Annotation des biais cognitifs")
-            st.warning("Merci de saisir vos initiales dans la colonne de gauche pour commencer.")
+            st.warning("Merci de saisir vos initiales pour commencer.")
             st.stop()
     else:
         st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
+
+    if "biais_index" not in st.session_state:
+        st.session_state.biais_index = 0
+    if "titres_random" not in st.session_state or st.session_state.get("reset_titres", False):
+        st.session_state.titres_random = df_titres_complet.sample(n=min(10, len(df_titres_complet))).reset_index(drop=True)
+        st.session_state.reset_titres = False
 
     biais_index = st.session_state.biais_index
     current_biais = df_biais.iloc[biais_index]
@@ -71,7 +71,7 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # Affichage contextuel
+    # Présentation biais
     if mode == "💻 Desktop":
         with st.sidebar:
             st.markdown("## ❓ Question")
@@ -81,10 +81,8 @@ def main():
     else:
         st.markdown("## ❓ Question")
         st.markdown(f"**{current_biais['question_annotation']}**")
-        st.markdown("ℹ️ **Définition** :")
         st.info(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
-    # Affichage des titres et radios
     annotations = []
     for i, row in st.session_state.titres_random.iterrows():
         titre = row["Titre"]
