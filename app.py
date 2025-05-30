@@ -3,7 +3,12 @@ import pandas as pd
 import streamlit as st
 import os
 
-st.set_page_config(page_title="Annotation biais", layout="wide")
+mode = st.sidebar.radio("🎛️ Mode d'affichage", ["💻 Desktop", "📱 Mobile"])
+
+if mode == "📱 Mobile":
+    st.set_page_config(page_title="Annotation biais", layout="centered")
+else:
+    st.set_page_config(page_title="Annotation biais", layout="wide")
 
 titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
@@ -23,7 +28,6 @@ def main():
     df_titres_complet = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
-    # ✅ Réinitialisation corrigée (sans bug)
     if st.sidebar.button("🧹 Réinitialiser tout"):
         if os.path.exists(save_path):
             os.remove(save_path)
@@ -66,12 +70,17 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
-    # 🧠 Affichage du biais à gauche (sidebar)
-    with st.sidebar:
+    if mode == "💻 Desktop":
+        with st.sidebar:
+            st.markdown("## ❓ Question")
+            st.markdown(f"**{current_biais['question_annotation']}**")
+            with st.expander("ℹ️ Définition du biais"):
+                st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
+    else:
         st.markdown("## ❓ Question")
         st.markdown(f"**{current_biais['question_annotation']}**")
-        with st.expander("ℹ️ Définition du biais"):
-            st.markdown(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
+        st.markdown("ℹ️ **Définition** :")
+        st.info(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
     annotations = []
     for i, row in st.session_state.titres_random.iterrows():
@@ -79,9 +88,7 @@ def main():
         key = f"{nom_biais}_{i}"
 
         st.markdown(
-            f"""<div style='margin-bottom: 0.2rem; margin-top: 1.2rem; font-weight: 600;'>
-            {i+1}. {titre}
-            </div>""",
+            f"<div style='margin-bottom: 0.2rem; margin-top: 1.2rem; font-weight: 600;'>{i+1}. {titre}</div>",
             unsafe_allow_html=True
         )
 
@@ -97,7 +104,7 @@ def main():
             options=[""] + list(likert_labels.keys()),
             format_func=lambda x: likert_labels.get(x, "Sélectionner"),
             key=key,
-            horizontal=True
+            horizontal=(mode == "💻 Desktop")
         )
 
         st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
@@ -113,30 +120,28 @@ def main():
         return all(a["annotation"] in ["1", "2", "3", "4"] for a in annotations)
 
     st.divider()
-    col1, col2, col3 = st.columns([1, 4, 1])
-    with col2:
-        if st.button("➡️ Biais suivant"):
-            if tous_titres_annotes():
-                df_save = pd.DataFrame(annotations)
-                if os.path.exists(save_path):
-                    df_existing = pd.read_csv(save_path)
-                    df_concat = pd.concat([df_existing, df_save], ignore_index=True)
-                else:
-                    df_concat = df_save
-                df_concat.to_csv(save_path, index=False)
-                for i in range(len(st.session_state.titres_random)):
-                    key = f"{nom_biais}_{i}"
-                    if key in st.session_state:
-                        del st.session_state[key]
-                if biais_index < len(df_biais) - 1:
-                    st.session_state.biais_index += 1
-                    st.session_state.reset_titres = True
-                    st.session_state.trigger_rerun = True
-                    st.rerun()
-                else:
-                    st.success("🎉 Tous les biais ont été annotés.")
+    if st.button("➡️ Biais suivant"):
+        if tous_titres_annotes():
+            df_save = pd.DataFrame(annotations)
+            if os.path.exists(save_path):
+                df_existing = pd.read_csv(save_path)
+                df_concat = pd.concat([df_existing, df_save], ignore_index=True)
             else:
-                st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
+                df_concat = df_save
+            df_concat.to_csv(save_path, index=False)
+            for i in range(len(st.session_state.titres_random)):
+                key = f"{nom_biais}_{i}"
+                if key in st.session_state:
+                    del st.session_state[key]
+            if biais_index < len(df_biais) - 1:
+                st.session_state.biais_index += 1
+                st.session_state.reset_titres = True
+                st.session_state.trigger_rerun = True
+                st.rerun()
+            else:
+                st.success("🎉 Tous les biais ont été annotés.")
+        else:
+            st.warning("⚠️ Merci d’annoter tous les titres avant de continuer.")
 
     if os.path.exists(save_path):
         st.sidebar.markdown("---")
