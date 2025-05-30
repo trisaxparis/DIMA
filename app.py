@@ -3,17 +3,18 @@ import pandas as pd
 import streamlit as st
 import os
 
+# Toujours défini en premier
+st.set_page_config(page_title="Annotation biais", layout="wide")
+
+# Choix du mode dans la sidebar
 mode = st.sidebar.radio("🎛️ Mode d'affichage", ["💻 Desktop", "📱 Mobile"])
 
-if mode == "📱 Mobile":
-    st.set_page_config(page_title="Annotation biais", layout="centered")
-else:
-    st.set_page_config(page_title="Annotation biais", layout="wide")
-
+# Chemins
 titre_path = "titres_manipulatifs10.csv"
 biais_path = "biais_complet_avec_questions.csv"
 save_path = "annotations_global.csv"
 
+# Gestion du rerun
 if "trigger_rerun" not in st.session_state:
     st.session_state.trigger_rerun = False
 elif st.session_state.trigger_rerun:
@@ -70,6 +71,7 @@ def main():
     st.progress(biais_annotes / total_biais)
     st.markdown(f"### Biais {biais_index + 1} / {total_biais}")
 
+    # Affichage contextuel
     if mode == "💻 Desktop":
         with st.sidebar:
             st.markdown("## ❓ Question")
@@ -82,6 +84,7 @@ def main():
         st.markdown("ℹ️ **Définition** :")
         st.info(f"**{nom_biais}** — {current_biais['definition_operationnelle']}")
 
+    # Affichage des titres et radios
     annotations = []
     for i, row in st.session_state.titres_random.iterrows():
         titre = row["Titre"]
