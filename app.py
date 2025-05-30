@@ -16,21 +16,16 @@ elif st.session_state.trigger_rerun:
     st.rerun()
 
 def main():
-    # ⛔ Vérifier fichiers
     if not os.path.exists(titre_path) or not os.path.exists(biais_path):
-        st.error("Fichier manquant.")
+        st.error("Fichiers manquants.")
         st.stop()
 
     df_titres = pd.read_csv(titre_path, sep=";")
     df_biais = pd.read_csv(biais_path)
 
-    # ✅ Vérification de la source réelle et des colonnes
-    st.sidebar.info(f"Fichier source : `{titre_path}`")
-    st.sidebar.write("Extrait du fichier :")
-    st.sidebar.dataframe(df_titres.head(3))
-
-    if "Bloc" not in df_titres.columns or "Titre" not in df_titres.columns or "Index" not in df_titres.columns:
-        st.error("❌ Le fichier de titres doit contenir les colonnes : Bloc, Titre, Index")
+    # Vérification colonnes attendues
+    if not all(col in df_titres.columns for col in ["Bloc", "Titre", "Index"]):
+        st.error("Le fichier de titres doit contenir les colonnes Bloc, Titre et Index.")
         st.stop()
 
     blocs = sorted(df_titres["Bloc"].dropna().unique())
@@ -43,7 +38,6 @@ def main():
         st.sidebar.success("Réinitialisation effectuée.")
         st.rerun()
 
-    # Initiales
     if "initiales" not in st.session_state or not st.session_state.initiales:
         initials = st.text_input("🖊️ Vos initiales :", key="initiales_input")
         if initials:
@@ -56,14 +50,11 @@ def main():
     else:
         st.sidebar.markdown(f"👤 Annotateur : **{st.session_state.initiales}**")
 
-    # Bloc courant
     if "bloc_index" not in st.session_state:
         st.session_state.bloc_index = 0
     current_bloc = blocs[st.session_state.bloc_index]
-
     df_bloc = df_titres[df_titres["Bloc"] == current_bloc].sample(n=10, random_state=42).reset_index(drop=True)
 
-    # Biais courant
     if "biais_index" not in st.session_state:
         st.session_state.biais_index = 0
     biais_index = st.session_state.biais_index
@@ -84,7 +75,14 @@ def main():
         index_titre = row["Index"]
         key = f"{nom_biais}_{current_bloc}_{i}"
 
-        st.markdown(f"**{i+1}. {titre}**")
+        # 🧠 Titre avec espacement harmonisé
+        st.markdown(
+            f"""<div style='margin-top: 1.5rem; margin-bottom: 0.3rem; font-weight: 600; font-size: 1rem;'>
+            {i+1}. {titre}
+            </div>""",
+            unsafe_allow_html=True
+        )
+
         choix = st.radio(
             label="",
             options=["", "1", "2", "3", "4"],
